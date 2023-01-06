@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>817</width>
+    <width>709</width>
     <height>801</height>
    </rect>
   </property>
@@ -14,9 +14,16 @@
    <string>label point</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="focusPolicy">
+    <enum>Qt::WheelFocus</enum>
+   </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QWidget" name="widget" native="true"/>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="focusPolicy">
+       <enum>Qt::WheelFocus</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -25,7 +32,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>817</width>
+     <width>709</width>
      <height>23</height>
     </rect>
    </property>
@@ -33,12 +40,19 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen_Dir"/>
+    <addaction name="actionOpenDir"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
+    <widget class="QMenu" name="menuChange_Shape">
+     <property name="title">
+      <string>Change Shape</string>
+     </property>
+     <addaction name="actionPoint_Shape"/>
+    </widget>
+    <addaction name="menuChange_Shape"/>
    </widget>
    <widget class="QMenu" name="menuview">
     <property name="title">
@@ -79,9 +93,10 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionOpen_Dir"/>
-   <addaction name="actionprevious_sample"/>
-   <addaction name="actionnext_sample"/>
+   <addaction name="actionOpenDir"/>
+   <addaction name="actionPreviousSample"/>
+   <addaction name="actionNextSample"/>
+   <addaction name="actionAddShape"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_label">
    <property name="contextMenuPolicy">
@@ -150,19 +165,56 @@
     </layout>
    </widget>
   </widget>
-  <action name="actionOpen_Dir">
+  <action name="actionOpenDir">
    <property name="text">
     <string>Open Dir</string>
    </property>
   </action>
-  <action name="actionprevious_sample">
+  <action name="actionPreviousSample">
    <property name="text">
-    <string>previous sample</string>
+    <string>Previous Sample</string>
+   </property>
+   <property name="toolTip">
+    <string>Previous Sample</string>
+   </property>
+   <property name="shortcut">
+    <string>A</string>
    </property>
   </action>
-  <action name="actionnext_sample">
+  <action name="actionNextSample">
    <property name="text">
-    <string>next sample</string>
+    <string>Next Sample</string>
+   </property>
+   <property name="shortcut">
+    <string>D</string>
+   </property>
+  </action>
+  <action name="actionAddShape">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Add Shape</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Shape</string>
+   </property>
+   <property name="shortcut">
+    <string>W</string>
+   </property>
+  </action>
+  <action name="actionPoint_Shape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Point Shape</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
    </property>
   </action>
  </widget>
