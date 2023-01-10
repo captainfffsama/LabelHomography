@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 15:50:30
+@LastEditTime: 2023-01-10 16:44:45
 @FilePath: /labelp/labelp.py
 @Description:
 '''
@@ -224,23 +224,24 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.sample_draw_area.stopDrawing()
 
     def show_file_dialog_slot(self):
+        self.dataListWidget.clear()
         dir_path = QFileDialog.getExistingDirectory(self, "Open Dir", "./")
         if dir_path:
             self.data_dir = dir_path
             default_item = None
-            self.samples_tree = get_sample_file(dir_path,
+            samples_tree = get_sample_file(dir_path,
                                                 filter=('.jpg', '.JPG','.png','.PNG','.bmp',
                                                         '.BMP', '.csv',
                                                         '.CSV'))
             self.dataListWidget.clear()
-            for k, v in self.samples_tree.items():
+            for k, v in samples_tree.items():
                 root = QTreeWidgetItem(self.dataListWidget)
                 root.setText(
                     0,
                     os.path.basename(k) + SEPARATE_FLAG +
-                    os.path.basename(self.samples_tree[k]['t']))
+                    os.path.basename(samples_tree[k]['t']))
                 root.setFlags(root.flags() & ~Qt.ItemIsSelectable)
-                for i in self.samples_tree[k]['s']:
+                for i in samples_tree[k]['s']:
                     child = QTreeWidgetItem(root)
                     child.setText(0, os.path.basename(i))
                     if default_item is None:

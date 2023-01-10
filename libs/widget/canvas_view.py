@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 15:22:28
+@LastEditTime: 2023-01-10 17:27:13
 @FilePath: /labelp/libs/widget/canvas_view.py
 @Description:
 '''
@@ -11,6 +11,8 @@ from typing import Union
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem
 from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal, QRectF
 from PyQt5.QtGui import QMouseEvent, QKeyEvent, QPixmap, QCursor
+
+from libs.utils import QPointF2QPoint
 
 from .shape import PointShape
 
@@ -95,12 +97,6 @@ class SampleCanvasScene(CanvasSceneBase):
         self._isdrawing = False
 
 
-# class CanvasUtilsMixin(QGraphicsView):
-# class CanvasUtilsMixin(object):
-#     def cursorPos2Scene(self,cursorPos):
-#         return self.mapToScene(self.mapFromGlobal(cursorPos))
-
-
 class CanvasView(QGraphicsView):
     stopDrawingSignal = pyqtSignal()
 
@@ -142,7 +138,8 @@ class CanvasView(QGraphicsView):
                 -self.backgroundPixmap.height() / 2,
                 self.backgroundPixmap.width(), self.backgroundPixmap.height())
         self.scene().setSceneRect(*rect)
-        # self.repaint()
+        self.fitInView(*rect,Qt.KeepAspectRatio)
+
         self.scene().update(self.sceneRect())
 
     def prepareAddShape(self, scene_pos: Union[QPointF, QPoint,
@@ -176,12 +173,10 @@ class CanvasView(QGraphicsView):
                 s_v = 1 + v_delta / abs(v_delta) * 0.1
             else:
                 s_v = 1
-            if 0.1 < self._ori_scale / s_v < 10:
+            if 0.01 < self.transform().m11() < 20:
                 self.scale(s_v, s_v)
-                self._ori_scale = self._ori_scale / s_v
 
-            # self.centerOn(ev.globalPosition())
-        #     self.zoomRequest.emit(v_delta)
+            self.centerOn(self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
         else:
             if v_delta:
                 c = int((self.verticalScrollBar().maximum() -
@@ -215,8 +210,8 @@ class CanvasView(QGraphicsView):
     def mousePressEvent(self, event):  ##鼠标单击
         if event.button() == Qt.LeftButton:
             pass
-            # if self.inImageRect(event.pos()):
-            #     if self.isdrawing:
+        if event.button() == Qt.MiddleButton:
+            self.fitInView(self.sceneRect(),Qt.KeepAspectRatio)
         super().mousePressEvent(event)
 
     def mouseDoubleClickEvent(self, event):  ##鼠标双击

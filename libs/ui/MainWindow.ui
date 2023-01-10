@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>label point</string>
+   <string>Label Homography</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../apprcc.qrc">
+    <normaloff>:/icon/icon/futurama.png</normaloff>:/icon/icon/futurama.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="focusPolicy">

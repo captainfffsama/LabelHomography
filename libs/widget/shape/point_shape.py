@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-05 12:56:36
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 15:23:46
+@LastEditTime: 2023-01-10 16:34:52
 @FilePath: /labelp/libs/widget/shape/point_shape.py
 @Description:
 '''
@@ -43,7 +43,6 @@ class PointShape(QGraphicsItem):
         painter.setBrush(brush)
         painter.setPen(pen)
 
-        # painter.drawPoint(QPoint(100,100))
         painter.drawEllipse(self.boundingRect())
 
         painter.setPen(ori_pen)

@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-19 10:53:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 14:03:16
+@LastEditTime: 2023-01-10 17:26:16
 @FilePath: /labelp/libs/utils.py
 @Description:
 '''
@@ -15,6 +15,7 @@ import numpy as np
 import cv2
 
 from PyQt5.QtGui import QImage
+from PyQt5.QtCore import QPoint,QPointF
 
 def get_sample_file(dir_path, filter=('.jpg', )):
     data_list = defaultdict(dict)
@@ -76,3 +77,6 @@ def countH(ps1,ps2):
                                 maxIters=100)
 
     return H
+
+def QPointF2QPoint(p):
+    return QPoint(int(p.x()),int(p.y()))
