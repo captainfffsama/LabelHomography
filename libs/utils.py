@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-19 10:53:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-03 14:07:59
+@LastEditTime: 2023-01-10 14:03:16
 @FilePath: /labelp/libs/utils.py
 @Description:
 '''
@@ -12,6 +12,7 @@ import os
 from collections import defaultdict
 
 import numpy as np
+import cv2
 
 from PyQt5.QtGui import QImage
 
@@ -65,3 +66,13 @@ def toQImage(file_path):
 
     return img
 
+def countH(ps1,ps2):
+    ps1=np.array(ps1)
+    ps2=np.array(ps2)
+    H, Mask = cv2.findHomography(ps1,
+                                ps2,
+                                     cv2.RANSAC,
+                                     3,
+                                maxIters=100)
+
+    return H

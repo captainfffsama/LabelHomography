@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 13:42:39
+@LastEditTime: 2023-01-10 14:11:49
 @FilePath: /labelp/labelp.py
 @Description:
 '''
@@ -12,12 +12,12 @@ from collections import defaultdict
 import sys
 import os
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QTreeWidgetItem, QHBoxLayout, QVBoxLayout, QActionGroup, QGraphicsItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QTreeWidgetItem, QHBoxLayout, QVBoxLayout, QActionGroup, QGraphicsItem, QMessageBox
 from PyQt5.QtCore import Qt, QPoint, QSize, QCoreApplication
 from PyQt5.QtGui import QImage, QPixmap, QCursor, QColor
 
 from libs.ui.ui_MainWindow import Ui_MainWindow
-from libs.utils import get_sample_file, toQImage
+from libs.utils import get_sample_file, toQImage, countH
 from libs.widget.canvas_view import CanvasView, TemplateCanvasScene, SampleCanvasScene
 from libs.widget.label_list_item import LabelListItem, LabelItemWidget
 from libs.widget.label_list_widget import LabelListWidget
@@ -31,6 +31,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.fixUI()
+
+        self._tr = QCoreApplication.translate
 
         self.actionAddShapeGroup = QActionGroup(self)
         self.actionAddShapeGroup.addAction(self.actionPoint_Shape)
@@ -177,6 +179,26 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             final_result["Sample"] = sample_info
 
             #count H
+            H = countH(sample_ps, template_ps)
+            if H is not None:
+                final_result["Sample2Template Matrix"] = H.tolist()
+            else:
+                title = self._tr(self.__class__.__name__, "Error")
+                text = self._tr(
+                    self.__class__.__name__,
+                    "Opencv count sample to template homography matrix failed! \
+                    \n May be points labeled no good enough.Please do not label all points in one line! \
+                    \n All label points will be removed!This label wont be saved!"
+                )
+                QMessageBox.critical(self, title, text, QMessageBox.Yes,
+                                     QMessageBox.Yes)
+
+                self.statusbar.showMessage(
+                    "{} H count failed!".format(
+                        os.path.basename(self.current_s_path)), 5000)
+                self.stopAddItemSlot()
+                self.cleanShape()
+                return
 
             sample_name, ext = os.path.splitext(self.current_s_path)
             with open(sample_name + '.json', 'w') as f:
