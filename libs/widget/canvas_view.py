@@ -3,8 +3,8 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 17:27:13
-@FilePath: /labelp/libs/widget/canvas_view.py
+@LastEditTime: 2023-01-10 17:42:19
+@FilePath: /label_homography/libs/widget/canvas_view.py
 @Description:
 '''
 from typing import Union
@@ -119,9 +119,13 @@ class CanvasView(QGraphicsView):
                                    and (not self.backgroundPixmap.isNull()))
 
     def scenePos2Cursor(self, scenePos):
+        if isinstance(scenePos,QPointF):
+            scenePos = QPointF2QPoint(scenePos)
         return self.mapToGlobal(self.mapFromScene(scenePos))
 
     def cursorPos2Scene(self, cursorPos):
+        if isinstance(cursorPos,QPointF):
+            cursorPos= QPointF2QPoint(cursorPos)
         return self.mapToScene(self.mapFromGlobal(cursorPos))
 
     @property
@@ -145,10 +149,10 @@ class CanvasView(QGraphicsView):
     def prepareAddShape(self, scene_pos: Union[QPointF, QPoint,
                                                QGraphicsItem]):
         self.startDrawing()
-        if isinstance(scene_pos, QPointF) or isinstance(scene_pos, QPoint):
-            QCursor.setPos(self.scenePos2Cursor(scene_pos))
-        elif isinstance(scene_pos, QGraphicsItem):
-            QCursor.setPos(self.scenePos2Cursor(scene_pos.scenePos()))
+        if isinstance(scene_pos, QGraphicsItem):
+            scene_pos=scene_pos.scenePos()
+        self.centerOn(scene_pos)
+        QCursor.setPos(self.scenePos2Cursor(scene_pos))
 
     def paintEvent(self, pe):
         super().paintEvent(pe)

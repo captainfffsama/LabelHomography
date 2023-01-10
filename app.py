@@ -3,8 +3,8 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 16:44:45
-@FilePath: /labelp/labelp.py
+@LastEditTime: 2023-01-10 17:46:25
+@FilePath: /label_homography/app.py
 @Description:
 '''
 import json
@@ -184,6 +184,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
             final_result["Template"] = template_info
             final_result["Sample"] = sample_info
+            if not sample_ps:
+                return
 
             #count H
             H = countH(sample_ps, template_ps)
