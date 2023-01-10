@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-09 17:01:01
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 15:31:01
+@LastEditTime: 2023-01-10 15:32:55
 @FilePath: /labelp/libs/widget/label_list_widget.py
 @Description:
 '''

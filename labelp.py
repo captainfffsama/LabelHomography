@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 15:23:28
+@LastEditTime: 2023-01-10 15:50:30
 @FilePath: /labelp/labelp.py
 @Description:
 '''
@@ -229,7 +229,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.data_dir = dir_path
             default_item = None
             self.samples_tree = get_sample_file(dir_path,
-                                                filter=('.jpg', '.JPG', '.bmp',
+                                                filter=('.jpg', '.JPG','.png','.PNG','.bmp',
                                                         '.BMP', '.csv',
                                                         '.CSV'))
             self.dataListWidget.clear()
