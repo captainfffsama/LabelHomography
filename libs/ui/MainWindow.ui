@@ -82,12 +82,21 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>50</width>
+     <width>0</width>
      <height>0</height>
     </size>
    </property>
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>48</width>
+     <height>48</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>LeftToolBarArea</enum>
@@ -165,17 +174,35 @@
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QListWidget" name="labelListWidget"/>
+      <widget class="QListWidget" name="labelListWidget">
+       <property name="contextMenuPolicy">
+        <enum>Qt::DefaultContextMenu</enum>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
   </widget>
   <action name="actionOpenDir">
+   <property name="icon">
+    <iconset resource="../../apprcc.qrc">
+     <normaloff>:/icon/icon/open.png</normaloff>:/icon/icon/open.png</iconset>
+   </property>
    <property name="text">
     <string>Open Dir</string>
    </property>
+   <property name="priority">
+    <enum>QAction::NormalPriority</enum>
+   </property>
   </action>
   <action name="actionPreviousSample">
+   <property name="icon">
+    <iconset resource="../../apprcc.qrc">
+     <normaloff>:/icon/icon/previous.png</normaloff>:/icon/icon/previous.png</iconset>
+   </property>
    <property name="text">
     <string>Previous Sample</string>
    </property>
@@ -187,6 +214,10 @@
    </property>
   </action>
   <action name="actionNextSample">
+   <property name="icon">
+    <iconset resource="../../apprcc.qrc">
+     <normaloff>:/icon/icon/next.png</normaloff>:/icon/icon/next.png</iconset>
+   </property>
    <property name="text">
     <string>Next Sample</string>
    </property>
@@ -197,6 +228,10 @@
   <action name="actionAddShape">
    <property name="enabled">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../apprcc.qrc">
+     <normaloff>:/icon/icon/add-new.png</normaloff>:/icon/icon/add-new.png</iconset>
    </property>
    <property name="text">
     <string>Add Shape</string>
@@ -223,6 +258,10 @@
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset resource="../../apprcc.qrc">
+     <normaloff>:/icon/icon/save.png</normaloff>:/icon/icon/save.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
@@ -239,6 +278,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../apprcc.qrc"/>
+ </resources>
  <connections/>
 </ui>

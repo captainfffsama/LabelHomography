@@ -3,19 +3,22 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 12:09:03
+@LastEditTime: 2023-01-10 13:41:44
 @FilePath: /labelp/libs/widget/canvas_view.py
 @Description:
 '''
 from typing import Union
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem
-from PyQt5.QtCore import pyqtSignal, QPointF,QPoint,Qt, pyqtSignal,QRectF
+from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal, QRectF
 from PyQt5.QtGui import QMouseEvent, QKeyEvent, QPixmap, QCursor
 
 from .shape import PointShape
 
+
 def printqtrect(rect):
-    print("rect:{},{},{},{}".format(rect.x(), rect.y(),rect.width(),rect.height()))
+    print("rect:{},{},{},{}".format(rect.x(), rect.y(), rect.width(),
+                                    rect.height()))
+
 
 class CanvasSceneBase(QGraphicsScene):
     def __init__(self, *args, **kwargs):
@@ -25,9 +28,10 @@ class CanvasSceneBase(QGraphicsScene):
     def mouseMoveEvent(self, event):  ##鼠标移动
         super().mouseMoveEvent(event)
 
+
 class TemplateCanvasScene(CanvasSceneBase):
-    itemDrawDoneSignal=pyqtSignal(QGraphicsItem)
-    delItemSignal=pyqtSignal(QGraphicsItem)
+    itemDrawDoneSignal = pyqtSignal(QGraphicsItem)
+    delItemSignal = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, **kwargs):
         super(TemplateCanvasScene, self).__init__(*args, **kwargs)
@@ -44,16 +48,18 @@ class TemplateCanvasScene(CanvasSceneBase):
         super().mousePressEvent(event)
 
     def add_points(self, points):
-        for idx,ps in enumerate(points):
-            item = PointShape(idx,str(idx))
+        for idx, ps in enumerate(points):
+            item = PointShape(idx, str(idx))
             self.addItem(item)
-            pos=QPoint(ps[0]+self.sceneRect().topLeft().x(),ps[1]+self.sceneRect().topLeft().y())
+            pos = QPoint(ps[0] + self.sceneRect().topLeft().x(),
+                         ps[1] + self.sceneRect().topLeft().y())
             item.setPos(pos)
         self._isdrawing = False
 
+
 class SampleCanvasScene(CanvasSceneBase):
-    itemDrawDoneSignal=pyqtSignal(QGraphicsItem)
-    delItemSignal=pyqtSignal(QGraphicsItem)
+    itemDrawDoneSignal = pyqtSignal(QGraphicsItem)
+    delItemSignal = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, **kwargs):
         super(SampleCanvasScene, self).__init__(*args, **kwargs)
@@ -73,15 +79,16 @@ class SampleCanvasScene(CanvasSceneBase):
                     self.itemDrawDoneSignal.emit(item)
         super().mousePressEvent(event)
 
-
     def add_points(self, points):
-        for idx,ps in enumerate(points):
-            item = PointShape(idx,str(idx))
+        for idx, ps in enumerate(points):
+            item = PointShape(idx, str(idx))
             self.addItem(item)
-            pos=QPoint(ps[0]+self.sceneRect().topLeft().x(),ps[1]+self.sceneRect().topLeft().y())
+            pos = QPoint(ps[0] + self.sceneRect().topLeft().x(),
+                         ps[1] + self.sceneRect().topLeft().y())
             item.setPos(pos)
-            self.itemDrawDoneSignal.emit(item)
         self._isdrawing = False
+
+
 # class CanvasUtilsMixin(QGraphicsView):
 # class CanvasUtilsMixin(object):
 #     def cursorPos2Scene(self,cursorPos):
@@ -132,9 +139,10 @@ class CanvasView(QGraphicsView):
         # self.repaint()
         self.scene().update(self.sceneRect())
 
-    def prepareAddShape(self, scene_pos: Union[QPointF,QPoint,QGraphicsItem]):
+    def prepareAddShape(self, scene_pos: Union[QPointF, QPoint,
+                                               QGraphicsItem]):
         self.startDrawing()
-        if isinstance(scene_pos, QPointF) or isinstance(scene_pos,QPoint):
+        if isinstance(scene_pos, QPointF) or isinstance(scene_pos, QPoint):
             QCursor.setPos(self.scenePos2Cursor(scene_pos))
         elif isinstance(scene_pos, QGraphicsItem):
             QCursor.setPos(self.scenePos2Cursor(scene_pos.scenePos()))
@@ -144,9 +152,9 @@ class CanvasView(QGraphicsView):
 
     def drawBackground(self, painter, rect):
         self.scene().setSceneRect(-self.backgroundPixmap.width() / 2,
-                          -self.backgroundPixmap.height() / 2,
-                          self.backgroundPixmap.width(),
-                          self.backgroundPixmap.height())
+                                  -self.backgroundPixmap.height() / 2,
+                                  self.backgroundPixmap.width(),
+                                  self.backgroundPixmap.height())
         painter.drawPixmap(self.sceneRect().left(),
                            self.sceneRect().top(), self.backgroundPixmap)
         super().drawBackground(painter, rect)
@@ -217,19 +225,24 @@ class CanvasView(QGraphicsView):
 
         else:
             print("=========")
-            print(self.scene().sceneRect().x(),self.scene().sceneRect().y(),self.scene().sceneRect().width(),self.scene().sceneRect().height())
+            print(self.scene().sceneRect().x(),
+                  self.scene().sceneRect().y(),
+                  self.scene().sceneRect().width(),
+                  self.scene().sceneRect().height())
             print(self.sceneRect())
             print(self.rect())
         super().keyPressEvent(event)
 
     def startDrawing(self):
         self.setCursor(Qt.CrossCursor)
-        self.isdrawing=True
+        self.isdrawing = True
         for item in self.scene().items():
             item.setFlags(QGraphicsItem.ItemIgnoresTransformations)
 
     def stopDrawing(self):
         self.setCursor(Qt.ArrowCursor)
-        self.isdrawing=False
+        self.isdrawing = False
         for item in self.scene().items():
-            item.setFlags(QGraphicsItem.ItemIgnoresTransformations|QGraphicsItem.ItemIsMovable|QGraphicsItem.ItemIsSelectable)
+            item.setFlags(QGraphicsItem.ItemIgnoresTransformations
+                          | QGraphicsItem.ItemIsMovable
+                          | QGraphicsItem.ItemIsSelectable)

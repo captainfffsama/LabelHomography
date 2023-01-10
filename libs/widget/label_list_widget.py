@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-09 17:01:01
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 10:06:32
+@LastEditTime: 2023-01-10 13:45:50
 @FilePath: /labelp/libs/widget/label_list_widget.py
 @Description:
 '''
@@ -20,6 +20,7 @@ class LabelListWidget(QListWidget):
     def __init__(self, *args, **kwargs):
         super(LabelListWidget, self).__init__(*args, **kwargs)
         self.currentItemChanged.connect(self.currentItemChanged_slot)
+        self.setSortingEnabled(True)
 
     def keyReleaseEvent(self, event) -> None:
         if event.key() == Qt.Key_Delete:

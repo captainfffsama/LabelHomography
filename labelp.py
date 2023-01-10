@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 12:13:16
+@LastEditTime: 2023-01-10 13:42:39
 @FilePath: /labelp/labelp.py
 @Description:
 '''
@@ -13,23 +13,24 @@ import sys
 import os
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QTreeWidgetItem, QHBoxLayout, QVBoxLayout, QActionGroup, QGraphicsItem
-from PyQt5.QtCore import Qt, QPoint,QSize
+from PyQt5.QtCore import Qt, QPoint, QSize, QCoreApplication
 from PyQt5.QtGui import QImage, QPixmap, QCursor, QColor
 
 from libs.ui.ui_MainWindow import Ui_MainWindow
 from libs.utils import get_sample_file, toQImage
 from libs.widget.canvas_view import CanvasView, TemplateCanvasScene, SampleCanvasScene
-from libs.widget.label_list_item import LabelListItem,LabelItemWidget
+from libs.widget.label_list_item import LabelListItem, LabelItemWidget
 from libs.widget.label_list_widget import LabelListWidget
+import apprcc_rc
 
 SEPARATE_FLAG = " : "
+
 
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.fixUI()
-        self.statusbar.showMessage("握草", 5000)
 
         self.actionAddShapeGroup = QActionGroup(self)
         self.actionAddShapeGroup.addAction(self.actionPoint_Shape)
@@ -68,7 +69,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.tem_draw_area.stopDrawingSignal.connect(self.stopAddItemSlot)
         self.sample_draw_area.stopDrawingSignal.connect(self.stopAddItemSlot)
 
-
         self.data_dir = None
         self.current_t_path = None
         self.current_s_path = None
@@ -77,34 +77,34 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     def fixUI(self):
         self.horizontalLayout_3.removeWidget(self.labelListWidget)
-        self.labelListWidget=LabelListWidget(self.dockWidgetContents_4)
+        self.labelListWidget = LabelListWidget(self.dockWidgetContents_4)
         self.labelListWidget.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.horizontalLayout_3.addWidget(self.labelListWidget)
         self.labelListWidget.needDelItem.connect(self.delItemSlot)
-        self.labelListWidget.currentItemTypeSignal.connect(self.showSelectShape)
+        self.labelListWidget.currentItemTypeSignal.connect(
+            self.showSelectShape)
 
         self.menuView.addAction(self.dockWidget_label.toggleViewAction())
         self.menuView.addAction(self.dockWidget_file.toggleViewAction())
 
-    def showSelectShape(self,shape_id,shape_type):
+    def showSelectShape(self, shape_id, shape_type):
         self.tem_draw_area.scene().update()
         self.sample_draw_area.scene().update()
         self.stopAddItemSlot()
-        if shape_type=="Template":
-            scene=self.tem_draw_area.scene()
+        if shape_type == "Template":
+            scene = self.tem_draw_area.scene()
             for item in self.sample_draw_area.scene().items():
                 item.setSelected(False)
         else:
-            scene=self.sample_draw_area.scene()
+            scene = self.sample_draw_area.scene()
             for item in self.tem_draw_area.scene().items():
                 item.setSelected(False)
 
         for item in scene.items():
-            if item.hash==shape_id:
+            if item.hash == shape_id:
                 item.setSelected(True)
             else:
                 item.setSelected(False)
-
 
     def actionAddShape_triggered_slot(self):
         self.tem_draw_area.prepareAddShape(QPoint(0, 0))
@@ -118,22 +118,26 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.labelListWidget.addItem(listItem)
         self.shapes_info[shape.hash]['SampleShape'] = shape
         self.shapes_info[shape.hash]['ListItem'] = listItem
-        for idx,item in enumerate(self.tem_draw_area.scene().items()):
-            if item.hash==shape.hash:
-                self.shapes_info[shape.hash]['TemplateShape']=self.tem_draw_area.scene().items()[idx]
+        for idx, item in enumerate(self.tem_draw_area.scene().items()):
+            if item.hash == shape.hash:
+                self.shapes_info[shape.hash][
+                    'TemplateShape'] = self.tem_draw_area.scene().items()[idx]
 
     def delItemSlot(self, item_hash):
         print(item_hash)
-        if isinstance(item_hash,QGraphicsItem):
-            item_hash =item_hash.hash
+        if isinstance(item_hash, QGraphicsItem):
+            item_hash = item_hash.hash
         if item_hash in self.shapes_info:
             delShapes_info = self.shapes_info.pop(item_hash)
-            self.labelListWidget.takeItem(self.labelListWidget.row(delShapes_info['ListItem']))
-            self.sample_draw_area.scene().removeItem(delShapes_info['SampleShape'])
-            self.tem_draw_area.scene().removeItem(delShapes_info['TemplateShape'])
+            self.labelListWidget.takeItem(
+                self.labelListWidget.row(delShapes_info['ListItem']))
+            self.sample_draw_area.scene().removeItem(
+                delShapes_info['SampleShape'])
+            self.tem_draw_area.scene().removeItem(
+                delShapes_info['TemplateShape'])
         else:
             for item_row in range(self.labelListWidget.count()):
-                if self.labelListWidget.item(item_row).hash==item_hash:
+                if self.labelListWidget.item(item_row).hash == item_hash:
                     self.labelListWidget.takeItem(item_row)
             for item in self.sample_draw_area.scene().items():
                 if item.hash == item_hash:
@@ -146,37 +150,41 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     def saveLabelFileSlot(self):
         if self.current_t_path and self.current_s_path:
             self.stopAddItemSlot()
-            template_ps=[]
-            sample_ps=[]
-            t_scene_rect=self.tem_draw_area.sceneRect()
-            s_scene_rect=self.sample_draw_area.sceneRect()
-            final_result={}
-            for k,v in self.shapes_info.items():
-                tps=v['TemplateShape'].scenePos()-t_scene_rect.topLeft()
-                sps=v['SampleShape'].scenePos()-s_scene_rect.topLeft()
-                template_ps.append((tps.x(),tps.y()))
-                sample_ps.append((sps.x(),sps.y()))
+            template_ps = []
+            sample_ps = []
+            t_scene_rect = self.tem_draw_area.sceneRect()
+            s_scene_rect = self.sample_draw_area.sceneRect()
+            final_result = {}
+            for k, v in self.shapes_info.items():
+                tps = v['TemplateShape'].scenePos() - t_scene_rect.topLeft()
+                sps = v['SampleShape'].scenePos() - s_scene_rect.topLeft()
+                template_ps.append((tps.x(), tps.y()))
+                sample_ps.append((sps.x(), sps.y()))
 
-            template_info={}
-            template_info['Path']=self.current_t_path
-            template_info['ImageSize']=(int(t_scene_rect.width()),int(t_scene_rect.height()))
-            template_info['Points']=template_ps
+            template_info = {}
+            template_info['Path'] = self.current_t_path
+            template_info['ImageSize'] = (int(t_scene_rect.width()),
+                                          int(t_scene_rect.height()))
+            template_info['Points'] = template_ps
 
-            sample_info={}
-            sample_info['Path']=self.current_s_path
-            sample_info['ImageSize']=(int(s_scene_rect.width()),int(s_scene_rect.height()))
-            sample_info['Points']=sample_ps
+            sample_info = {}
+            sample_info['Path'] = self.current_s_path
+            sample_info['ImageSize'] = (int(s_scene_rect.width()),
+                                        int(s_scene_rect.height()))
+            sample_info['Points'] = sample_ps
 
-            final_result["Template"]=template_info
-            final_result["Sample"]=sample_info
+            final_result["Template"] = template_info
+            final_result["Sample"] = sample_info
 
             #count H
 
-            sample_name,ext=os.path.splitext(self.current_s_path)
-            with open(sample_name+'.json','w') as f:
-                json.dump(final_result,f,indent=4,ensure_ascii=False)
+            sample_name, ext = os.path.splitext(self.current_s_path)
+            with open(sample_name + '.json', 'w') as f:
+                json.dump(final_result, f, indent=4, ensure_ascii=False)
 
-            self.statusbar.showMessage("{} label save done".format(os.path.basename(self.current_s_path)), 5000)
+            self.statusbar.showMessage(
+                "{} label save done".format(
+                    os.path.basename(self.current_s_path)), 5000)
 
     def stopAddItemSlot(self):
         for item in self.tem_draw_area.scene().items():
@@ -219,6 +227,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     def previous_sample_select_slot(self):
         if self.actionAuto_Save.isChecked():
             self.saveLabelFileSlot()
+        self.stopAddItemSlot()
         self.cleanShape()
         self.dataListWidget.setCurrentItem(
             self.dataListWidget.itemAbove(self.dataListWidget.currentItem()))
@@ -232,6 +241,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     def next_sample_select_slot(self):
         if self.actionAuto_Save.isChecked():
             self.saveLabelFileSlot()
+        self.stopAddItemSlot()
         self.cleanShape()
         self.dataListWidget.setCurrentItem(
             self.dataListWidget.itemBelow(self.dataListWidget.currentItem()))
@@ -263,20 +273,36 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.sample_draw_area.loadPixmap(
                 QPixmap.fromImage(toQImage(self.current_s_path)))
 
-            labelfile=os.path.splitext(self.current_s_path)[0]+'.json'
+            labelfile = os.path.splitext(self.current_s_path)[0] + '.json'
             if os.path.exists(labelfile):
                 self.cleanShape()
                 with open(labelfile, 'r') as fr:
-                    content=json.load(fr)
+                    content = json.load(fr)
 
-                self.tem_draw_area.scene().add_points(content['Template']['Points'])
-                self.sample_draw_area.scene().add_points(content['Sample']['Points'])
+                self.tem_draw_area.scene().add_points(
+                    content['Template']['Points'])
+                self.sample_draw_area.scene().add_points(
+                    content['Sample']['Points'])
+
+                for idx, (titem, sitem) in enumerate(
+                        zip(self.tem_draw_area.scene().items(),
+                            self.sample_draw_area.scene().items())):
+                    self.shapes_info[titem.hash][
+                        'TemplateShape'] = self.tem_draw_area.scene().items(
+                        )[idx]
+                    self.shapes_info[sitem.hash][
+                        'SampleShape'] = self.sample_draw_area.scene().items(
+                        )[idx]
+
+                    listItem = LabelListItem(text=str(titem._label),
+                                             hash=titem.hash,
+                                             parent=self.labelListWidget)
+                    self.labelListWidget.addItem(listItem)
+                    self.shapes_info[titem.hash]['ListItem'] = listItem
+
+                self.stopAddItemSlot()
 
     def mouseMoveEvent(self, event):
-        self.setFocus()
-        print("======")
-        print(self.tem_draw_area.hasFocus())
-        print(self.tem_draw_area.focusPolicy())
         super().mouseMoveEvent(event)
 
 
