@@ -3,10 +3,13 @@
 @Author: captainfffsama
 @Date: 2023-01-06 13:27:04
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-06 13:59:46
+@LastEditTime: 2023-01-09 16:30:42
 @FilePath: /labelp/libs/config/color_list.py
 @Description:
 '''
+
+from PyQt5.QtGui import QColor
+
 COLOR_LIST = (
     (131, 139, 139),
     (139, 115, 85),
@@ -445,3 +448,6 @@ COLOR_LIST = (
     (238, 224, 229),
     (255, 240, 245),
 )
+
+def get_color(num):
+    return QColor(*COLOR_LIST[num%len(COLOR_LIST)])

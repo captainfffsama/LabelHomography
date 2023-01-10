@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>709</width>
+    <width>746</width>
     <height>801</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>709</width>
+     <width>746</width>
      <height>23</height>
     </rect>
    </property>
@@ -41,6 +41,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpenDir"/>
+    <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -53,15 +54,16 @@
      <addaction name="actionPoint_Shape"/>
     </widget>
     <addaction name="menuChange_Shape"/>
+    <addaction name="actionAuto_Save"/>
    </widget>
-   <widget class="QMenu" name="menuview">
+   <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>view</string>
+     <string>View</string>
     </property>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuview"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="minimumSize">
@@ -97,13 +99,17 @@
    <addaction name="actionPreviousSample"/>
    <addaction name="actionNextSample"/>
    <addaction name="actionAddShape"/>
+   <addaction name="actionSave"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_label">
+  <widget class="QDockWidget" name="dockWidget_file">
    <property name="contextMenuPolicy">
     <enum>Qt::DefaultContextMenu</enum>
    </property>
    <property name="autoFillBackground">
     <bool>true</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::RightDockWidgetArea</set>
@@ -117,7 +123,7 @@
    <widget class="QWidget" name="dockWidgetContents_3">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QTreeWidget" name="treeWidget">
+      <widget class="QTreeWidget" name="dataListWidget">
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
@@ -143,7 +149,10 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_file">
+  <widget class="QDockWidget" name="dockWidget_label">
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
    <property name="allowedAreas">
     <set>Qt::BottomDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
@@ -156,11 +165,7 @@
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QListWidget" name="listWidget">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-      </widget>
+      <widget class="QListWidget" name="labelListWidget"/>
      </item>
     </layout>
    </widget>
@@ -215,6 +220,22 @@
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionAuto_Save">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto Save</string>
    </property>
   </action>
  </widget>
