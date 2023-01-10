@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 13:41:44
+@LastEditTime: 2023-01-10 15:22:28
 @FilePath: /labelp/libs/widget/canvas_view.py
 @Description:
 '''
@@ -21,12 +21,18 @@ def printqtrect(rect):
 
 
 class CanvasSceneBase(QGraphicsScene):
+    haveItemSelectedSignal=pyqtSignal()
+    itemSelectedSignal=pyqtSignal(QGraphicsItem)
     def __init__(self, *args, **kwargs):
         super(CanvasSceneBase, self).__init__(*args, **kwargs)
         self._isdrawing = False
 
     def mouseMoveEvent(self, event):  ##鼠标移动
         super().mouseMoveEvent(event)
+
+    def closeAllItemsSelected_slot(self):
+        for item in self.items():
+            item.setSelected(False)
 
 
 class TemplateCanvasScene(CanvasSceneBase):
@@ -198,7 +204,6 @@ class CanvasView(QGraphicsView):
 
     def mouseMoveEvent(self, event):  ##鼠标移动
         point = event.pos()
-        # print(self.id)
         if self.inImageRect(event.pos()):
             if self.isdrawing:
                 self.setCursor(Qt.CrossCursor)
@@ -223,14 +228,6 @@ class CanvasView(QGraphicsView):
         if event.key() == Qt.Key_Escape:
             self.stopDrawingSignal.emit()
 
-        else:
-            print("=========")
-            print(self.scene().sceneRect().x(),
-                  self.scene().sceneRect().y(),
-                  self.scene().sceneRect().width(),
-                  self.scene().sceneRect().height())
-            print(self.sceneRect())
-            print(self.rect())
         super().keyPressEvent(event)
 
     def startDrawing(self):

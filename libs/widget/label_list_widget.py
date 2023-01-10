@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-09 17:01:01
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 13:45:50
+@LastEditTime: 2023-01-10 15:31:01
 @FilePath: /labelp/libs/widget/label_list_widget.py
 @Description:
 '''
@@ -29,7 +29,6 @@ class LabelListWidget(QListWidget):
         super().keyReleaseEvent(event)
 
     def currentItemChanged_slot(self,current,previous):
-        print("run")
         self.removeItemWidget(previous)
         itemWidget=LabelItemWidget()
         self.setItemWidget(current,itemWidget)
@@ -40,3 +39,17 @@ class LabelListWidget(QListWidget):
     def getCurrentItemTypeSlot(self,item_type):
         if self.currentItem():
             self.currentItemTypeSignal.emit(self.currentItem().hash,item_type)
+
+    def setItemSelectedFromGraphicsItemSlot(self,gitem):
+        for item in self.findItems(str(gitem._label),Qt.MatchExactly):
+            if item.hash==gitem.hash:
+                self.setCurrentItem(item)
+            label_item_widget= self.itemWidget(item)
+        if label_item_widget:
+            if gitem.belongScene=="TemplateCanvasScene":
+                label_item_widget.templateBtn.setChecked(True)
+            elif gitem.belongScene=="SampleCanvasScene":
+                label_item_widget.sampleBtn.setChecked(True)
+            else:
+                pass
+

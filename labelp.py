@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 14:11:49
+@LastEditTime: 2023-01-10 15:23:28
 @FilePath: /labelp/labelp.py
 @Description:
 '''
@@ -63,10 +63,18 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.tem_draw_area.scene().itemDrawDoneSignal.connect(
             self.sample_draw_area.scene().prepareAddShape_slot)
         self.tem_draw_area.scene().delItemSignal.connect(self.delItemSlot)
+        self.tem_draw_area.scene().haveItemSelectedSignal.connect(
+            self.sample_draw_area.scene().closeAllItemsSelected_slot)
+        self.tem_draw_area.scene().itemSelectedSignal.connect(
+            self.labelListWidget.setItemSelectedFromGraphicsItemSlot)
 
         self.sample_draw_area.scene().itemDrawDoneSignal.connect(
             self.shapePairdrawDone_slot)
         self.sample_draw_area.scene().delItemSignal.connect(self.delItemSlot)
+        self.sample_draw_area.scene().haveItemSelectedSignal.connect(
+            self.tem_draw_area.scene().closeAllItemsSelected_slot)
+        self.sample_draw_area.scene().itemSelectedSignal.connect(
+            self.labelListWidget.setItemSelectedFromGraphicsItemSlot)
 
         self.tem_draw_area.stopDrawingSignal.connect(self.stopAddItemSlot)
         self.sample_draw_area.stopDrawingSignal.connect(self.stopAddItemSlot)
@@ -126,7 +134,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     'TemplateShape'] = self.tem_draw_area.scene().items()[idx]
 
     def delItemSlot(self, item_hash):
-        print(item_hash)
         if isinstance(item_hash, QGraphicsItem):
             item_hash = item_hash.hash
         if item_hash in self.shapes_info:
@@ -244,7 +251,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     self.dataListWidget.setCurrentItem(default_item)
             self.dataListWidget.expandAll()
             print("get all file done!")
-            print(self.samples_tree)
 
     def previous_sample_select_slot(self):
         if self.actionAuto_Save.isChecked():
@@ -281,8 +287,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     self.dataListWidget.itemAbove(curren_item))
         else:
             # 若当前文件是待标注文件
-            print("current changed")
-            print(curren_item.text(0))
             self.current_t_path = os.path.join(
                 self.data_dir,
                 *curren_item.parent().text(0).split(SEPARATE_FLAG))
