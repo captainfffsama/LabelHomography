@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/chiebotgpuhq/MyCode/python/labelP/labelp/libs/ui/MainWindow.ui'
+# Form implementation generated from reading ui file '/home/chiebotgpuhq/MyCode/python/label_homography/libs/ui/MainWindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -90,6 +90,17 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.labelListWidget)
         self.dockWidget_label.setWidget(self.dockWidgetContents_4)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget_label)
+        self.dockWidget_check = QtWidgets.QDockWidget(MainWindow)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.dockWidget_check.sizePolicy().hasHeightForWidth())
+        self.dockWidget_check.setSizePolicy(sizePolicy)
+        self.dockWidget_check.setObjectName("dockWidget_check")
+        self.dockWidgetContents = QtWidgets.QWidget()
+        self.dockWidgetContents.setObjectName("dockWidgetContents")
+        self.dockWidget_check.setWidget(self.dockWidgetContents)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget_check)
         self.actionOpenDir = QtWidgets.QAction(MainWindow)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/icon/icon/open.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -153,6 +164,7 @@ class Ui_MainWindow(object):
         self.dockWidget_file.setWindowTitle(_translate("MainWindow", "Data List"))
         self.dockWidget_label.setWindowTitle(_translate("MainWindow", "Label List"))
         self.labelListWidget.setSortingEnabled(True)
+        self.dockWidget_check.setWindowTitle(_translate("MainWindow", "Final Result View"))
         self.actionOpenDir.setText(_translate("MainWindow", "Open Dir"))
         self.actionPreviousSample.setText(_translate("MainWindow", "Previous Sample"))
         self.actionPreviousSample.setToolTip(_translate("MainWindow", "Previous Sample"))

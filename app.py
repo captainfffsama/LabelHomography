@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 17:46:25
+@LastEditTime: 2023-01-11 10:46:31
 @FilePath: /label_homography/app.py
 @Description:
 '''
@@ -232,9 +232,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.data_dir = dir_path
             default_item = None
             samples_tree = get_sample_file(dir_path,
-                                                filter=('.jpg', '.JPG','.png','.PNG','.bmp',
-                                                        '.BMP', '.csv',
-                                                        '.CSV'))
+                                           filter=('.jpg', '.JPG', '.png',
+                                                   '.PNG', '.bmp', '.BMP',
+                                                   '.csv', '.CSV'))
             self.dataListWidget.clear()
             for k, v in samples_tree.items():
                 root = QTreeWidgetItem(self.dataListWidget)

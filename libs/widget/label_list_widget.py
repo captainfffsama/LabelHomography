@@ -3,19 +3,20 @@
 @Author: captainfffsama
 @Date: 2023-01-09 17:01:01
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 15:32:55
-@FilePath: /labelp/libs/widget/label_list_widget.py
+@LastEditTime: 2023-01-11 10:45:30
+@FilePath: /label_homography/libs/widget/label_list_widget.py
 @Description:
 '''
 
 from PyQt5.QtWidgets import QListWidget
-from PyQt5.QtCore import Qt,pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 
 from libs.widget.label_list_item import LabelItemWidget
 
+
 class LabelListWidget(QListWidget):
-    needDelItem=pyqtSignal(str)
-    currentItemTypeSignal=pyqtSignal(str,str)
+    needDelItem = pyqtSignal(str)
+    currentItemTypeSignal = pyqtSignal(str, str)
 
     def __init__(self, *args, **kwargs):
         super(LabelListWidget, self).__init__(*args, **kwargs)
@@ -26,30 +27,29 @@ class LabelListWidget(QListWidget):
         if event.key() == Qt.Key_Delete:
             if self.currentItem():
                 self.needDelItem.emit(self.currentItem().hash)
-        super().keyReleaseEvent(event)
+        return super().keyReleaseEvent(event)
 
-    def currentItemChanged_slot(self,current,previous):
+    def currentItemChanged_slot(self, current, previous):
         self.removeItemWidget(previous)
-        itemWidget=LabelItemWidget()
-        self.setItemWidget(current,itemWidget)
+        itemWidget = LabelItemWidget()
+        self.setItemWidget(current, itemWidget)
 
         itemWidget.currentItemTypeSignal.connect(self.getCurrentItemTypeSlot)
         itemWidget.currentItemType_slot()
 
-    def getCurrentItemTypeSlot(self,item_type):
+    def getCurrentItemTypeSlot(self, item_type):
         if self.currentItem():
-            self.currentItemTypeSignal.emit(self.currentItem().hash,item_type)
+            self.currentItemTypeSignal.emit(self.currentItem().hash, item_type)
 
-    def setItemSelectedFromGraphicsItemSlot(self,gitem):
-        for item in self.findItems(str(gitem._label),Qt.MatchExactly):
-            if item.hash==gitem.hash:
+    def setItemSelectedFromGraphicsItemSlot(self, gitem):
+        for item in self.findItems(str(gitem._label), Qt.MatchExactly):
+            if item.hash == gitem.hash:
                 self.setCurrentItem(item)
-            label_item_widget= self.itemWidget(item)
+            label_item_widget = self.itemWidget(item)
         if label_item_widget:
-            if gitem.belongScene=="TemplateCanvasScene":
+            if gitem.belongScene == "TemplateCanvasScene":
                 label_item_widget.templateBtn.setChecked(True)
-            elif gitem.belongScene=="SampleCanvasScene":
+            elif gitem.belongScene == "SampleCanvasScene":
                 label_item_widget.sampleBtn.setChecked(True)
             else:
                 pass
-
