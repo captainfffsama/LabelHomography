@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-11 12:41:44
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 15:41:06
+@LastEditTime: 2023-01-11 16:56:31
 @FilePath: /label_homography/libs/widget/check_dock_widget_view.py
 @Description:
 '''
@@ -70,7 +70,7 @@ class CheckDockWidgetCanvasView(QGraphicsView):
                 c = int((self.verticalScrollBar().maximum() -
                          self.verticalScrollBar().minimum()) * 0.1)
                 v = self.verticalScrollBar().value(
-                ) - c if v_delta < 0 else self.verticalScrollBar().value() + c
+                ) - c if v_delta > 0 else self.verticalScrollBar().value() + c
                 v = max(self.verticalScrollBar().minimum(), v)
                 v = min(self.verticalScrollBar().maximum(), v)
                 self.verticalScrollBar().setValue(v)
@@ -78,7 +78,7 @@ class CheckDockWidgetCanvasView(QGraphicsView):
                 c = int((self.horizontalScrollBar().maximum() -
                          self.horizontalScrollBar().minimum()) * 0.1)
                 v = self.horizontalScrollBar().value(
-                ) - c if v_delta < 0 else self.horizontalScrollBar().value(
+                ) - c if h_delta > 0 else self.horizontalScrollBar().value(
                 ) + c
                 v = max(self.horizontalScrollBar().minimum(), v)
                 v = min(self.horizontalScrollBar().maximum(), v)

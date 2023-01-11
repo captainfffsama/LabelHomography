@@ -3,12 +3,12 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 14:48:58
+@LastEditTime: 2023-01-11 16:54:38
 @FilePath: /label_homography/libs/widget/canvas_view.py
 @Description:
 '''
 from typing import Union
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem,QFrame
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem, QFrame
 from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QCursor
 
@@ -178,7 +178,7 @@ class CanvasView(QGraphicsView):
                 c = int((self.verticalScrollBar().maximum() -
                          self.verticalScrollBar().minimum()) * 0.1)
                 v = self.verticalScrollBar().value(
-                ) - c if v_delta < 0 else self.verticalScrollBar().value() + c
+                ) - c if v_delta > 0 else self.verticalScrollBar().value() + c
                 v = max(self.verticalScrollBar().minimum(), v)
                 v = min(self.verticalScrollBar().maximum(), v)
                 self.verticalScrollBar().setValue(v)
@@ -186,7 +186,7 @@ class CanvasView(QGraphicsView):
                 c = int((self.horizontalScrollBar().maximum() -
                          self.horizontalScrollBar().minimum()) * 0.1)
                 v = self.horizontalScrollBar().value(
-                ) - c if v_delta < 0 else self.horizontalScrollBar().value(
+                ) - c if  h_delta > 0 else self.horizontalScrollBar().value(
                 ) + c
                 v = max(self.horizontalScrollBar().minimum(), v)
                 v = min(self.horizontalScrollBar().maximum(), v)
@@ -226,4 +226,3 @@ class CanvasView(QGraphicsView):
             item.setFlags(QGraphicsItem.ItemIgnoresTransformations
                           | QGraphicsItem.ItemIsMovable
                           | QGraphicsItem.ItemIsSelectable)
-
