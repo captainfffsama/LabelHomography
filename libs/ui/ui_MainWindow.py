@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/chiebotgpuhq/MyCode/python/labelP/labelp/libs/ui/MainWindow.ui'
+# Form implementation generated from reading ui file '/home/chiebotgpuhq/MyCode/python/label_homography/libs/ui/MainWindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
