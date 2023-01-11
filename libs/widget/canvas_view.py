@@ -3,14 +3,14 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-10 17:42:19
+@LastEditTime: 2023-01-11 14:48:58
 @FilePath: /label_homography/libs/widget/canvas_view.py
 @Description:
 '''
 from typing import Union
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem
-from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal, QRectF
-from PyQt5.QtGui import QMouseEvent, QKeyEvent, QPixmap, QCursor
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem,QFrame
+from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap, QCursor
 
 from libs.utils import QPointF2QPoint
 
@@ -23,14 +23,12 @@ def printqtrect(rect):
 
 
 class CanvasSceneBase(QGraphicsScene):
-    haveItemSelectedSignal=pyqtSignal()
-    itemSelectedSignal=pyqtSignal(QGraphicsItem)
+    haveItemSelectedSignal = pyqtSignal()
+    itemSelectedSignal = pyqtSignal(QGraphicsItem)
+
     def __init__(self, *args, **kwargs):
         super(CanvasSceneBase, self).__init__(*args, **kwargs)
         self._isdrawing = False
-
-    def mouseMoveEvent(self, event):  ##鼠标移动
-        super().mouseMoveEvent(event)
 
     def closeAllItemsSelected_slot(self):
         for item in self.items():
@@ -53,7 +51,7 @@ class TemplateCanvasScene(CanvasSceneBase):
                     item.setPos(event.scenePos())
                     self._isdrawing = False
                     self.itemDrawDoneSignal.emit(item)
-        super().mousePressEvent(event)
+        return super().mousePressEvent(event)
 
     def add_points(self, points):
         for idx, ps in enumerate(points):
@@ -85,7 +83,7 @@ class SampleCanvasScene(CanvasSceneBase):
                     item.setPos(event.scenePos())
                     self._isdrawing = False
                     self.itemDrawDoneSignal.emit(item)
-        super().mousePressEvent(event)
+        return super().mousePressEvent(event)
 
     def add_points(self, points):
         for idx, ps in enumerate(points):
@@ -107,7 +105,7 @@ class CanvasView(QGraphicsView):
         self.setFocusPolicy(Qt.WheelFocus)
         self.setMouseTracking(True)
         self.id = id
-        self._ori_scale = 1
+        self.setFrameShape(QFrame.NoFrame)
 
     @property
     def isdrawing(self):
@@ -119,18 +117,14 @@ class CanvasView(QGraphicsView):
                                    and (not self.backgroundPixmap.isNull()))
 
     def scenePos2Cursor(self, scenePos):
-        if isinstance(scenePos,QPointF):
+        if isinstance(scenePos, QPointF):
             scenePos = QPointF2QPoint(scenePos)
         return self.mapToGlobal(self.mapFromScene(scenePos))
 
     def cursorPos2Scene(self, cursorPos):
-        if isinstance(cursorPos,QPointF):
-            cursorPos= QPointF2QPoint(cursorPos)
+        if isinstance(cursorPos, QPointF):
+            cursorPos = QPointF2QPoint(cursorPos)
         return self.mapToScene(self.mapFromGlobal(cursorPos))
-
-    @property
-    def center_global_pos(self):
-        return self.cursorPos2Scene(QPointF(0, 0))
 
     def inImageRect(self, viewPos):
         return self.mapFromScene(
@@ -142,7 +136,7 @@ class CanvasView(QGraphicsView):
                 -self.backgroundPixmap.height() / 2,
                 self.backgroundPixmap.width(), self.backgroundPixmap.height())
         self.scene().setSceneRect(*rect)
-        self.fitInView(*rect,Qt.KeepAspectRatio)
+        self.fitInView(*rect, Qt.KeepAspectRatio)
 
         self.scene().update(self.sceneRect())
 
@@ -150,12 +144,9 @@ class CanvasView(QGraphicsView):
                                                QGraphicsItem]):
         self.startDrawing()
         if isinstance(scene_pos, QGraphicsItem):
-            scene_pos=scene_pos.scenePos()
+            scene_pos = scene_pos.scenePos()
         self.centerOn(scene_pos)
         QCursor.setPos(self.scenePos2Cursor(scene_pos))
-
-    def paintEvent(self, pe):
-        super().paintEvent(pe)
 
     def drawBackground(self, painter, rect):
         self.scene().setSceneRect(-self.backgroundPixmap.width() / 2,
@@ -164,7 +155,7 @@ class CanvasView(QGraphicsView):
                                   self.backgroundPixmap.height())
         painter.drawPixmap(self.sceneRect().left(),
                            self.sceneRect().top(), self.backgroundPixmap)
-        super().drawBackground(painter, rect)
+        return super().drawBackground(painter, rect)
 
     def wheelEvent(self, ev):
         delta = ev.angleDelta()
@@ -180,7 +171,8 @@ class CanvasView(QGraphicsView):
             if 0.01 < self.transform().m11() < 20:
                 self.scale(s_v, s_v)
 
-            self.centerOn(self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
+            self.centerOn(
+                self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
         else:
             if v_delta:
                 c = int((self.verticalScrollBar().maximum() -
@@ -206,28 +198,20 @@ class CanvasView(QGraphicsView):
         if self.inImageRect(event.pos()):
             if self.isdrawing:
                 self.setCursor(Qt.CrossCursor)
-                #do samething
         else:
             self.setCursor(Qt.ArrowCursor)
-        super().mouseMoveEvent(event)
+        return super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event):  ##鼠标单击
-        if event.button() == Qt.LeftButton:
-            pass
         if event.button() == Qt.MiddleButton:
-            self.fitInView(self.sceneRect(),Qt.KeepAspectRatio)
-        super().mousePressEvent(event)
-
-    def mouseDoubleClickEvent(self, event):  ##鼠标双击
-        if event.button() == Qt.LeftButton:
-            point = event.pos()
-        super().mouseDoubleClickEvent(event)
+            self.fitInView(self.sceneRect(), Qt.KeepAspectRatio)
+        return super().mousePressEvent(event)
 
     def keyPressEvent(self, event):  ##按键按下
         if event.key() == Qt.Key_Escape:
             self.stopDrawingSignal.emit()
 
-        super().keyPressEvent(event)
+        return super().keyPressEvent(event)
 
     def startDrawing(self):
         self.setCursor(Qt.CrossCursor)
@@ -242,3 +226,4 @@ class CanvasView(QGraphicsView):
             item.setFlags(QGraphicsItem.ItemIgnoresTransformations
                           | QGraphicsItem.ItemIsMovable
                           | QGraphicsItem.ItemIsSelectable)
+
