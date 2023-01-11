@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 15:38:29
+@LastEditTime: 2023-01-11 17:49:27
 @FilePath: /label_homography/app.py
 @Description:
 '''
@@ -177,11 +177,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             t_scene_rect = self.tem_draw_area.sceneRect()
             s_scene_rect = self.sample_draw_area.sceneRect()
             final_result = {}
+            listItemList=[]
             for k, v in self.shapes_info.items():
                 tps = v['TemplateShape'].scenePos() - t_scene_rect.topLeft()
                 sps = v['SampleShape'].scenePos() - s_scene_rect.topLeft()
                 template_ps.append((tps.x(), tps.y()))
                 sample_ps.append((sps.x(), sps.y()))
+                listItemList.append(v['ListItem'])
 
             template_info = {}
             template_info['Path'] = self.current_t_path
@@ -202,10 +204,14 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
             #count H
             H,mask = countH(sample_ps, template_ps)
-            print(mask)
             if H is not None:
                 final_result["Sample2Template Matrix"] = H.tolist()
                 self.checkDockWidgetView.showFinalImage(self.current_t_qimage,self.current_s_qimage,H.T)
+                for i,v in enumerate(mask[:,0]):
+                    if not v:
+                        listItemList[i].setData(Qt.DisplayRole,listItemList[i]._label+":Failed")
+                    else:
+                        listItemList[i].setData(Qt.DisplayRole,listItemList[i]._label)
             else:
                 title = self._tr(self.__class__.__name__, "Error")
                 text = self._tr(

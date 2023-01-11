@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-09 17:01:01
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 15:29:18
+@LastEditTime: 2023-01-11 17:46:15
 @FilePath: /label_homography/libs/widget/label_list_widget.py
 @Description:
 '''
@@ -42,14 +42,15 @@ class LabelListWidget(QListWidget):
             self.currentItemTypeSignal.emit(self.currentItem().hash, item_type)
 
     def setItemSelectedFromGraphicsItemSlot(self, gitem):
-        for item in self.findItems(str(gitem._label), Qt.MatchExactly):
+        for i in range(self.count()):
+            item=self.item(i)
             if item.hash == gitem.hash:
                 self.setCurrentItem(item)
-            label_item_widget = self.itemWidget(item)
-        if label_item_widget:
-            if gitem.belongScene == "TemplateCanvasScene":
-                label_item_widget.templateBtn.setChecked(True)
-            elif gitem.belongScene == "SampleCanvasScene":
-                label_item_widget.sampleBtn.setChecked(True)
-            else:
-                pass
+                label_item_widget = self.itemWidget(item)
+                if gitem.belongScene == "TemplateCanvasScene":
+                    label_item_widget.templateBtn.setChecked(True)
+                elif gitem.belongScene == "SampleCanvasScene":
+                    label_item_widget.sampleBtn.setChecked(True)
+                else:
+                    pass
+                break

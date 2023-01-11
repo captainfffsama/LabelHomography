@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-09 16:23:28
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 10:45:11
+@LastEditTime: 2023-01-11 17:40:20
 @FilePath: /label_homography/libs/widget/label_list_item.py
 @Description:
 '''
@@ -48,6 +48,7 @@ class LabelListItem(QListWidgetItem):
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
         self.setBackground(get_color(int(text)))
         self.setSizeHint(QSize(0, 35))
+        # self.setData(Qt.DisplayRole,self._label+":"+self._hash)
 
     @property
     def hash(self):
