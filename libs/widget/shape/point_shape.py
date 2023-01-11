@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-05 12:56:36
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 10:45:55
+@LastEditTime: 2023-01-11 14:46:03
 @FilePath: /label_homography/libs/widget/shape/point_shape.py
 @Description:
 '''
@@ -35,10 +35,13 @@ class PointShape(QGraphicsItem):
         if self.isSelected():
             pen = QPen()
             pen.setColor(QColor("white"))
+            pen.setWidth(3)
             brush = QBrush(QColor("indigo"), Qt.SolidPattern)
         else:
             pen = QPen()
-            pen.setColor(get_color(self._label))
+            pen.setStyle(Qt.DotLine)
+            pen.setWidth(2)
+            pen.setColor(QColor("yellow"))
             brush = QBrush(get_color(self._label), Qt.SolidPattern)
 
         painter.setBrush(brush)
@@ -50,7 +53,7 @@ class PointShape(QGraphicsItem):
         painter.setBrush(ori_brush)
 
     def boundingRect(self):
-        return QRectF(-4, -4, 8, 8)
+        return QRectF(-5, -5, 10, 10)
 
     def mouseMoveEvent(self, event: 'QGraphicsSceneMouseEvent'):
         return super().mouseMoveEvent(event)

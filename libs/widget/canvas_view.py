@@ -3,14 +3,14 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 10:44:49
+@LastEditTime: 2023-01-11 14:48:58
 @FilePath: /label_homography/libs/widget/canvas_view.py
 @Description:
 '''
 from typing import Union
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem
-from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal, QRectF
-from PyQt5.QtGui import QMouseEvent, QKeyEvent, QPixmap, QCursor
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem,QFrame
+from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap, QCursor
 
 from libs.utils import QPointF2QPoint
 
@@ -105,6 +105,7 @@ class CanvasView(QGraphicsView):
         self.setFocusPolicy(Qt.WheelFocus)
         self.setMouseTracking(True)
         self.id = id
+        self.setFrameShape(QFrame.NoFrame)
 
     @property
     def isdrawing(self):
@@ -124,10 +125,6 @@ class CanvasView(QGraphicsView):
         if isinstance(cursorPos, QPointF):
             cursorPos = QPointF2QPoint(cursorPos)
         return self.mapToScene(self.mapFromGlobal(cursorPos))
-
-    @property
-    def center_global_pos(self):
-        return self.cursorPos2Scene(QPointF(0, 0))
 
     def inImageRect(self, viewPos):
         return self.mapFromScene(
@@ -229,3 +226,4 @@ class CanvasView(QGraphicsView):
             item.setFlags(QGraphicsItem.ItemIgnoresTransformations
                           | QGraphicsItem.ItemIsMovable
                           | QGraphicsItem.ItemIsSelectable)
+

@@ -3,8 +3,8 @@
 @Author: captainfffsama
 @Date: 2023-01-06 13:27:04
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-09 16:30:42
-@FilePath: /labelp/libs/config/color_list.py
+@LastEditTime: 2023-01-11 14:40:14
+@FilePath: /label_homography/libs/config/color_list.py
 @Description:
 '''
 
@@ -446,7 +446,6 @@ COLOR_LIST = (
     (0, 0, 139),
     (255, 240, 245),
     (238, 224, 229),
-    (255, 240, 245),
 )
 
 def get_color(num):

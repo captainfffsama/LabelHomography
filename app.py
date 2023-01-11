@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 10:46:31
+@LastEditTime: 2023-01-11 15:38:29
 @FilePath: /label_homography/app.py
 @Description:
 '''
@@ -11,14 +11,18 @@ import json
 from collections import defaultdict
 import sys
 import os
+
+import numpy as np
+
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QTreeWidgetItem, QHBoxLayout, QVBoxLayout, QActionGroup, QGraphicsItem, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QTreeWidgetItem, QVBoxLayout, QActionGroup, QGraphicsItem,QGraphicsScene, QMessageBox,QGraphicsPixmapItem
 from PyQt5.QtCore import Qt, QPoint, QSize, QCoreApplication
 from PyQt5.QtGui import QImage, QPixmap, QCursor, QColor
 
 from libs.ui.ui_MainWindow import Ui_MainWindow
 from libs.utils import get_sample_file, toQImage, countH
 from libs.widget.canvas_view import CanvasView, TemplateCanvasScene, SampleCanvasScene
+from libs.widget.check_dock_widget_view import CheckDockWidgetCanvasView
 from libs.widget.label_list_item import LabelListItem, LabelItemWidget
 from libs.widget.label_list_widget import LabelListWidget
 import apprcc_rc
@@ -39,14 +43,14 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         self.actionOpenDir.triggered.connect(self.show_file_dialog_slot)
         self.actionPreviousSample.triggered.connect(
-            self.previous_sample_select_slot)
-        self.actionNextSample.triggered.connect(self.next_sample_select_slot)
+            self.previousSampleSelectSlot)
+        self.actionNextSample.triggered.connect(self.nextSampleSelectSlot)
         self.actionAddShape.triggered.connect(
             self.actionAddShape_triggered_slot)
         self.actionSave.triggered.connect(self.saveLabelFileSlot)
 
         self.dataListWidget.currentItemChanged.connect(
-            self.tree_currentItemChanged_slot)
+            self.treeCurrentItemChangedSlot)
 
         draw_area_layout = QVBoxLayout(self.widget)
         self.tem_draw_area = CanvasView(id="tem", parent=self.widget)
@@ -81,7 +85,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         self.data_dir = None
         self.current_t_path = None
+        self.current_t_qimage= None
         self.current_s_path = None
+        self.current_t_qimage= None
 
         self.shapes_info = defaultdict(dict)
 
@@ -96,23 +102,30 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         self.menuView.addAction(self.dockWidget_label.toggleViewAction())
         self.menuView.addAction(self.dockWidget_file.toggleViewAction())
+        self.menuView.addAction(self.dockWidget_check.toggleViewAction())
+
+        self.checkDockWidgetView=CheckDockWidgetCanvasView(self.dockWidget_check)
+        self.checkDockWidgetView.setScene(QGraphicsScene(self.checkDockWidgetView))
+        self.horizontalLayout_4.addWidget(self.checkDockWidgetView)
 
     def showSelectShape(self, shape_id, shape_type):
         self.tem_draw_area.scene().update()
         self.sample_draw_area.scene().update()
         self.stopAddItemSlot()
         if shape_type == "Template":
-            scene = self.tem_draw_area.scene()
+            view=self.tem_draw_area
             for item in self.sample_draw_area.scene().items():
                 item.setSelected(False)
         else:
-            scene = self.sample_draw_area.scene()
+
+            view=self.sample_draw_area
             for item in self.tem_draw_area.scene().items():
                 item.setSelected(False)
 
-        for item in scene.items():
+        for item in view.scene().items():
             if item.hash == shape_id:
                 item.setSelected(True)
+                view.centerOn(item.scenePos())
             else:
                 item.setSelected(False)
 
@@ -188,9 +201,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 return
 
             #count H
-            H = countH(sample_ps, template_ps)
+            H,mask = countH(sample_ps, template_ps)
+            print(mask)
             if H is not None:
                 final_result["Sample2Template Matrix"] = H.tolist()
+                self.checkDockWidgetView.showFinalImage(self.current_t_qimage,self.current_s_qimage,H.T)
             else:
                 title = self._tr(self.__class__.__name__, "Error")
                 text = self._tr(
@@ -205,7 +220,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.statusbar.showMessage(
                     "{} H count failed!".format(
                         os.path.basename(self.current_s_path)), 5000)
-                self.stopAddItemSlot()
                 self.cleanShape()
                 return
 
@@ -255,7 +269,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.dataListWidget.expandAll()
             print("get all file done!")
 
-    def previous_sample_select_slot(self):
+    def previousSampleSelectSlot(self):
         if self.actionAuto_Save.isChecked():
             self.saveLabelFileSlot()
         self.stopAddItemSlot()
@@ -268,8 +282,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.sample_draw_area.scene().clear()
         self.shapes_info.clear()
         self.labelListWidget.clear()
+        self.checkDockWidgetView.scene().clear()
 
-    def next_sample_select_slot(self):
+    def nextSampleSelectSlot(self):
         if self.actionAuto_Save.isChecked():
             self.saveLabelFileSlot()
         self.stopAddItemSlot()
@@ -277,7 +292,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.dataListWidget.setCurrentItem(
             self.dataListWidget.itemBelow(self.dataListWidget.currentItem()))
 
-    def tree_currentItemChanged_slot(self, curren_item, previ_item):
+    def treeCurrentItemChangedSlot(self, curren_item, previ_item):
         if curren_item is None:
             self.dataListWidget.setCurrentItem(previ_item)
             return
@@ -290,6 +305,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     self.dataListWidget.itemAbove(curren_item))
         else:
             # 若当前文件是待标注文件
+            self.cleanShape()
             self.current_t_path = os.path.join(
                 self.data_dir,
                 *curren_item.parent().text(0).split(SEPARATE_FLAG))
@@ -297,14 +313,15 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.data_dir,
                 curren_item.parent().text(0).split(SEPARATE_FLAG)[0],
                 curren_item.text(0))
+            self.current_t_qimage=toQImage(self.current_t_path)
             self.tem_draw_area.loadPixmap(
-                QPixmap.fromImage(toQImage(self.current_t_path)))
+                QPixmap.fromImage(self.current_t_qimage))
+            self.current_s_qimage=toQImage(self.current_s_path)
             self.sample_draw_area.loadPixmap(
-                QPixmap.fromImage(toQImage(self.current_s_path)))
+                QPixmap.fromImage(self.current_s_qimage))
 
             labelfile = os.path.splitext(self.current_s_path)[0] + '.json'
             if os.path.exists(labelfile):
-                self.cleanShape()
                 with open(labelfile, 'r') as fr:
                     content = json.load(fr)
 
@@ -328,6 +345,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                                              parent=self.labelListWidget)
                     self.labelListWidget.addItem(listItem)
                     self.shapes_info[titem.hash]['ListItem'] = listItem
+                H=np.array(content["Sample2Template Matrix"])
+                print(H)
+                self.checkDockWidgetView.showFinalImage(self.current_t_qimage,self.current_s_qimage,H.T)
 
                 self.stopAddItemSlot()
 

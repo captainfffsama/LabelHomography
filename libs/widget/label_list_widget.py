@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-09 17:01:01
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 10:45:30
+@LastEditTime: 2023-01-11 15:29:18
 @FilePath: /label_homography/libs/widget/label_list_widget.py
 @Description:
 '''
