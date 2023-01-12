@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-19 10:53:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 15:38:41
+@LastEditTime: 2023-01-12 16:00:34
 @FilePath: /label_homography/libs/utils.py
 @Description:
 '''
@@ -76,7 +76,7 @@ def toQImage(file_path):
 def countH(ps1, ps2):
     ps1 = np.array(ps1)
     ps2 = np.array(ps2)
-    H, Mask = cv2.findHomography(ps1, ps2, cv2.RANSAC, 5, maxIters=100)
+    H, Mask = cv2.findHomography(ps1, ps2, cv2.RANSAC, 3, maxIters=100)
 
     return H, Mask
 
@@ -115,17 +115,15 @@ def printQTransform(transform: QTransform):
         transform.m22(), transform.m23(), transform.m31(), transform.m32(),
         transform.m33()))
 
+
 def printFuncName(func):
-    _runtime={}
-    _runtime.setdefault(func.__name__,0)
+    _runtime = {}
+    _runtime.setdefault(func.__name__, 0)
+
     @functools.wraps(func)
     def warp(*args, **kwargs):
-        print("run {} {} time".format(func.__name__,_runtime[func.__name__]))
-        _runtime[func.__name__] +=1
-        return func(*args,**kwargs)
+        print("run {} {} time".format(func.__name__, _runtime[func.__name__]))
+        _runtime[func.__name__] += 1
+        return func(*args, **kwargs)
+
     return warp
-
-
-
-
-

@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-05 12:56:36
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 13:54:24
+@LastEditTime: 2023-01-12 16:01:45
 @FilePath: /label_homography/libs/widget/shape/point_shape.py
 @Description:
 '''
@@ -64,4 +64,3 @@ class PointShape(QGraphicsItem):
                 self.scene().delItemSignal.emit(self)
 
         return super().mouseReleaseEvent(event)
-

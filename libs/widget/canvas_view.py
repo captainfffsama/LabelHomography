@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 15:51:18
+@LastEditTime: 2023-01-12 15:59:22
 @FilePath: /label_homography/libs/widget/canvas_view.py
 @Description:
 '''
@@ -218,6 +218,8 @@ class CanvasView(QGraphicsView):
 
         mods = ev.modifiers()
         if Qt.ControlModifier == int(mods):
+            self.centerOn(
+                self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
             if v_delta:
                 s_v = 1 + v_delta / abs(v_delta) * 0.1
             else:
@@ -225,8 +227,6 @@ class CanvasView(QGraphicsView):
             if 0.01 < self.transform().m11() < 20:
                 self.scale(s_v, s_v)
 
-            self.centerOn(
-                self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
         else:
             if v_delta:
                 c = int((self.verticalScrollBar().maximum() -

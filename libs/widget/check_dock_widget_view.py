@@ -3,19 +3,19 @@
 @Author: captainfffsama
 @Date: 2023-01-11 12:41:44
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 16:56:31
+@LastEditTime: 2023-01-12 16:01:23
 @FilePath: /label_homography/libs/widget/check_dock_widget_view.py
 @Description:
 '''
 
-from PyQt5.QtWidgets import QGraphicsView,QGraphicsPixmapItem,QFrame
-from PyQt5.QtCore import Qt,QPointF
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsPixmapItem, QFrame
+from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QPixmap
-from libs.utils import QPointF2QPoint,ndarray2QTransform,printQTransform
+from libs.utils import QPointF2QPoint, ndarray2QTransform, printQTransform
+
 
 class CheckDockWidgetCanvasView(QGraphicsView):
-
-    def __init__(self,*args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.backgroundPixmap = QPixmap()
@@ -57,14 +57,14 @@ class CheckDockWidgetCanvasView(QGraphicsView):
 
         mods = ev.modifiers()
         if Qt.ControlModifier == int(mods):
+            self.centerOn(
+                self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
             if v_delta:
                 s_v = 1 + v_delta / abs(v_delta) * 0.1
             else:
                 s_v = 1
             self.scale(s_v, s_v)
 
-            self.centerOn(
-                self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
         else:
             if v_delta:
                 c = int((self.verticalScrollBar().maximum() -
@@ -90,16 +90,16 @@ class CheckDockWidgetCanvasView(QGraphicsView):
             self.fitInView(self.sceneRect(), Qt.KeepAspectRatio)
         return super().mousePressEvent(event)
 
-    def showFinalImage(self,timg,simg,H):
+    def showFinalImage(self, timg, simg, H):
         self.scene().clear()
-        template_qpixmap=QPixmap.fromImage(timg)
-        template_qgitem=QGraphicsPixmapItem(template_qpixmap)
+        template_qpixmap = QPixmap.fromImage(timg)
+        template_qgitem = QGraphicsPixmapItem(template_qpixmap)
         template_qgitem.setOpacity(0.5)
 
-        sample_qpixmap=QPixmap.fromImage(simg)
-        sample_qgitem=QGraphicsPixmapItem(sample_qpixmap)
+        sample_qpixmap = QPixmap.fromImage(simg)
+        sample_qgitem = QGraphicsPixmapItem(sample_qpixmap)
         sample_qgitem.setOpacity(0.5)
-        sample_qgitem.setTransform(ndarray2QTransform(H),combine=True)
+        sample_qgitem.setTransform(ndarray2QTransform(H), combine=True)
 
         self.scene().addItem(sample_qgitem)
         self.scene().addItem(template_qgitem)

@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 15:56:10
+@LastEditTime: 2023-01-12 16:01:14
 @FilePath: /label_homography/app.py
 @Description:
 '''
@@ -15,7 +15,7 @@ from pprint import pprint
 import numpy as np
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QTreeWidgetItem, QVBoxLayout, QActionGroup, QGraphicsItem,QGraphicsScene, QMessageBox,QGraphicsPixmapItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QTreeWidgetItem, QVBoxLayout, QActionGroup, QGraphicsItem, QGraphicsScene, QMessageBox, QGraphicsPixmapItem
 from PyQt5.QtCore import Qt, QPoint, QSize, QCoreApplication
 from PyQt5.QtGui import QImage, QPixmap, QCursor, QColor
 
@@ -54,11 +54,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         draw_area_layout = QVBoxLayout(self.widget)
         self.tem_draw_area = CanvasView(parent=self.widget)
-        self.tem_draw_area.setWindowTitle(self._tr("CanvasView","Template View"))
+        self.tem_draw_area.setWindowTitle(
+            self._tr("CanvasView", "Template View"))
         self.tem_draw_scene = TemplateCanvasScene()
         self.tem_draw_area.setScene(self.tem_draw_scene)
         self.sample_draw_area = CanvasView(parent=self.widget)
-        self.sample_draw_area.setWindowTitle(self._tr("CanvasView","Sample View"))
+        self.sample_draw_area.setWindowTitle(
+            self._tr("CanvasView", "Sample View"))
         self.sample_draw_scene = SampleCanvasScene()
         self.sample_draw_area.setScene(self.sample_draw_scene)
         draw_area_layout.addWidget(self.tem_draw_area)
@@ -72,7 +74,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         self.tem_draw_area.scene().ItemSelectedSignal.connect(
             self.labelListWidget.setItemSelectedFromGraphicsItemSlot)
-        self.tem_draw_area.scene().NoSelectedSignal.connect(self.clearLabelWidgetSelectionSlot)
+        self.tem_draw_area.scene().NoSelectedSignal.connect(
+            self.clearLabelWidgetSelectionSlot)
 
         self.sample_draw_area.scene().itemDrawDoneSignal.connect(
             self.shapePairdrawDone_slot)
@@ -80,18 +83,19 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         self.sample_draw_area.scene().ItemSelectedSignal.connect(
             self.labelListWidget.setItemSelectedFromGraphicsItemSlot)
-        self.sample_draw_area.scene().NoSelectedSignal.connect(self.clearLabelWidgetSelectionSlot)
+        self.sample_draw_area.scene().NoSelectedSignal.connect(
+            self.clearLabelWidgetSelectionSlot)
 
         self.tem_draw_area.stopDrawingSignal.connect(self.stopAddItemSlot)
         self.sample_draw_area.stopDrawingSignal.connect(self.stopAddItemSlot)
 
         self.data_dir = None
         self.current_t_path = None
-        self.current_t_qimage= None
+        self.current_t_qimage = None
         self.current_s_path = None
-        self.current_t_qimage= None
+        self.current_t_qimage = None
 
-        self.shapes_hash_set=set([])
+        self.shapes_hash_set = set([])
 
     def fixUI(self):
         self.horizontalLayout_3.removeWidget(self.labelListWidget)
@@ -106,32 +110,35 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.menuView.addAction(self.dockWidget_file.toggleViewAction())
         self.menuView.addAction(self.dockWidget_check.toggleViewAction())
 
-        self.checkDockWidgetView=CheckDockWidgetCanvasView(self.dockWidget_check)
-        self.checkDockWidgetView.setScene(QGraphicsScene(self.checkDockWidgetView))
+        self.checkDockWidgetView = CheckDockWidgetCanvasView(
+            self.dockWidget_check)
+        self.checkDockWidgetView.setScene(
+            QGraphicsScene(self.checkDockWidgetView))
         self.horizontalLayout_4.addWidget(self.checkDockWidgetView)
 
     def clearLabelWidgetSelectionSlot(self):
-        if self.sample_draw_area.scene().selectedItems()==0 and self.tem_draw_area.scene().selectedItems()==0:
+        if self.sample_draw_area.scene().selectedItems(
+        ) == 0 and self.tem_draw_area.scene().selectedItems() == 0:
             self.labelListWidget.clearCurrentItemWidget()
 
-    def clearOtherCanvasItemsSelectedSlot(self,gitem):
-            if gitem.belongScene == "TemplateCanvasScene":
-                self.sample_draw_area.scene().clearSelection()
-            elif gitem.belongScene == "SampleCanvasScene":
-                self.tem_draw_area.scene().clearSelection()
-            else:
-                pass
+    def clearOtherCanvasItemsSelectedSlot(self, gitem):
+        if gitem.belongScene == "TemplateCanvasScene":
+            self.sample_draw_area.scene().clearSelection()
+        elif gitem.belongScene == "SampleCanvasScene":
+            self.tem_draw_area.scene().clearSelection()
+        else:
+            pass
 
     def showSelectShape(self, shape_id, shape_type):
         self.stopAddItemSlot()
         if shape_type == "Template":
-            view=self.tem_draw_area
+            view = self.tem_draw_area
             self.sample_draw_area.scene().clearSelection()
         else:
-            view=self.sample_draw_area
+            view = self.sample_draw_area
             self.tem_draw_area.scene().clearSelection()
 
-        item=view.scene().findItemByHash(shape_id)
+        item = view.scene().findItemByHash(shape_id)
         if item:
             if item != view.scene().beSelectedItem:
                 item.setSelected(True)
@@ -165,11 +172,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             t_scene_rect = self.tem_draw_area.sceneRect()
             s_scene_rect = self.sample_draw_area.sceneRect()
             final_result = {}
-            hashList=list(self.shapes_hash_set)
+            hashList = list(self.shapes_hash_set)
 
             for itemHash in hashList:
-                tps=self.tem_draw_area.scene().findItemByHash(itemHash).scenePos()-t_scene_rect.topLeft()
-                sps=self.sample_draw_area.scene().findItemByHash(itemHash).scenePos()-t_scene_rect.topLeft()
+                tps = self.tem_draw_area.scene().findItemByHash(
+                    itemHash).scenePos() - t_scene_rect.topLeft()
+                sps = self.sample_draw_area.scene().findItemByHash(
+                    itemHash).scenePos() - t_scene_rect.topLeft()
                 template_ps.append((tps.x(), tps.y()))
                 sample_ps.append((sps.x(), sps.y()))
 
@@ -191,17 +200,19 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 return
 
             #count H
-            H,mask = countH(sample_ps, template_ps)
+            H, mask = countH(sample_ps, template_ps)
             if H is not None:
                 final_result["Sample2Template Matrix"] = H.tolist()
-                self.checkDockWidgetView.showFinalImage(self.current_t_qimage,self.current_s_qimage,H.T)
-                for flag,hash in zip(mask[:,0],hashList):
-                    listItem=self.labelListWidget.findItemByHash(hash)
+                self.checkDockWidgetView.showFinalImage(
+                    self.current_t_qimage, self.current_s_qimage, H.T)
+                for flag, hash in zip(mask[:, 0], hashList):
+                    listItem = self.labelListWidget.findItemByHash(hash)
                     if listItem is not None:
                         if not flag:
-                            listItem.setData(Qt.DisplayRole,listItem._label+":Failed")
+                            listItem.setData(Qt.DisplayRole,
+                                             listItem._label + ":Failed")
                         else:
-                            listItem.setData(Qt.DisplayRole,listItem._label)
+                            listItem.setData(Qt.DisplayRole, listItem._label)
             else:
                 title = self._tr(self.__class__.__name__, "Error")
                 text = self._tr(
@@ -309,10 +320,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.data_dir,
                 curren_item.parent().text(0).split(SEPARATE_FLAG)[0],
                 curren_item.text(0))
-            self.current_t_qimage=toQImage(self.current_t_path)
+            self.current_t_qimage = toQImage(self.current_t_path)
             self.tem_draw_area.loadPixmap(
                 QPixmap.fromImage(self.current_t_qimage))
-            self.current_s_qimage=toQImage(self.current_s_path)
+            self.current_s_qimage = toQImage(self.current_s_path)
             self.sample_draw_area.loadPixmap(
                 QPixmap.fromImage(self.current_s_qimage))
 
@@ -333,14 +344,16 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                                              hash=titem.hash,
                                              parent=self.labelListWidget)
                     self.labelListWidget.addItem(listItem)
-                H=np.array(content["Sample2Template Matrix"])
+                H = np.array(content["Sample2Template Matrix"])
                 print(H)
-                self.checkDockWidgetView.showFinalImage(self.current_t_qimage,self.current_s_qimage,H.T)
+                self.checkDockWidgetView.showFinalImage(
+                    self.current_t_qimage, self.current_s_qimage, H.T)
 
                 self.stopAddItemSlot()
 
     def keyPressEvent(self, event):  ##按键按下
         event.accept()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

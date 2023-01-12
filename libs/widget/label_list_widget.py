@@ -3,13 +3,13 @@
 @Author: captainfffsama
 @Date: 2023-01-09 17:01:01
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 15:55:50
+@LastEditTime: 2023-01-12 16:01:36
 @FilePath: /label_homography/libs/widget/label_list_widget.py
 @Description:
 '''
 
 import weakref
-from PyQt5.QtWidgets import QListWidget,QGraphicsItem,QAbstractItemView
+from PyQt5.QtWidgets import QListWidget, QGraphicsItem, QAbstractItemView
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from libs.widget.label_list_item import LabelItemWidget
@@ -25,7 +25,7 @@ class LabelListWidget(QListWidget):
         self.currentItemChanged.connect(self.currentItemChanged_slot)
         self.setSortingEnabled(True)
         self.setSelectionMode(QAbstractItemView.NoSelection)
-        self._itemMap=weakref.WeakValueDictionary()
+        self._itemMap = weakref.WeakValueDictionary()
 
     def addItem(self, item):
         if getattr(item, 'hash'):
@@ -42,7 +42,7 @@ class LabelListWidget(QListWidget):
     def takeItemByHash(self, hash):
         item = self.findItemByHash(hash)
         if item:
-            self._itemMap.pop(hash,None)
+            self._itemMap.pop(hash, None)
             self.takeItem(self.row(item))
 
     def insertItem(self, item):
@@ -56,30 +56,31 @@ class LabelListWidget(QListWidget):
                 self.needDelItem.emit(self.currentItem().hash)
         return super().keyReleaseEvent(event)
 
-    def selectionChanged(self,selected,deselected):
-        print("label list selected item:",self.selectedItems()[0].hash)
-        print("current item:",self.currentItem().hash)
-        super().selectionChanged(selected,deselected)
+    def selectionChanged(self, selected, deselected):
+        print("label list selected item:", self.selectedItems()[0].hash)
+        print("current item:", self.currentItem().hash)
+        super().selectionChanged(selected, deselected)
 
     # @printFuncName
     def currentItemChanged_slot(self, current, previous):
         if previous:
             self.removeItemWidget(previous)
-            print("p:",previous._label)
+            print("p:", previous._label)
         if current is not None:
-            print("c:",current._label)
+            print("c:", current._label)
             self.setCurrentItem(current)
             itemWidget = LabelItemWidget()
             self.setItemWidget(current, itemWidget)
-            itemWidget.currentItemTypeSignal.connect(self.getCurrentItemTypeSlot)
+            itemWidget.currentItemTypeSignal.connect(
+                self.getCurrentItemTypeSlot)
             itemWidget.currentItemType_slot()
 
     def getCurrentItemTypeSlot(self, item_type):
         if self.currentItem():
             self.currentItemTypeSignal.emit(self.currentItem().hash, item_type)
 
-    def setItemSelectedFromGraphicsItemSlot(self, gitem:QGraphicsItem):
-        item=self.findItemByHash(gitem.hash)
+    def setItemSelectedFromGraphicsItemSlot(self, gitem: QGraphicsItem):
+        item = self.findItemByHash(gitem.hash)
         if item != self.currentItem():
             self.setCurrentItem(item)
             # item.setSelected(True)
