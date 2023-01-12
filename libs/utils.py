@@ -3,13 +3,14 @@
 @Author: captainfffsama
 @Date: 2022-12-19 10:53:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 15:44:49
+@LastEditTime: 2023-01-12 15:38:41
 @FilePath: /label_homography/libs/utils.py
 @Description:
 '''
 import math
 import os
 from collections import defaultdict
+import functools
 
 import numpy as np
 import cv2
@@ -114,36 +115,17 @@ def printQTransform(transform: QTransform):
         transform.m22(), transform.m23(), transform.m31(), transform.m32(),
         transform.m33()))
 
-
-def generateHomographyImage(img1: QImage, img2: QImage,
-                            H: np.ndarray) -> QImage:
-    img1 = Mat2QImage(img1)
-    img2 = Mat2QImage(img2)
-
-
-def convertpt2matrix(pts):
-    if isinstance(pts, list):
-        pts = np.array([x + [1] for x in pts])
-    if pts.shape[-1] == 2:
-        expend_m = np.array([[1], [1], [1], [1]])
-        pts = np.concatenate((pts, expend_m), axis=1)
-    return pts
+def printFuncName(func):
+    _runtime={}
+    _runtime.setdefault(func.__name__,0)
+    @functools.wraps(func)
+    def warp(*args, **kwargs):
+        print("run {} {} time".format(func.__name__,_runtime[func.__name__]))
+        _runtime[func.__name__] +=1
+        return func(*args,**kwargs)
+    return warp
 
 
-def generate_transform_pic(imgb_shape, imgA, H):
-    imgA_warp = cv2.warpPerspective(imgA,
-                                    H,
-                                    imgb_shape,
-                                    flags=cv2.INTER_LINEAR)
 
-    k_pts = [[0, 0], [0, imgA.shape[0] - 1],
-             [imgA.shape[1] - 1, imgA.shape[0] - 1], [imgA.shape[1] - 1, 0]]
 
-    kptm = convertpt2matrix(k_pts)
-    warp_kpm = np.matmul(H, kptm.T)
-    warp_kpm = (warp_kpm / warp_kpm[2, :])[:2, :].astype(int).T.reshape(
-        (-1, 1, 2))
-    breakpoint()
-    # FIXME:这里可能有问题,没做越界
-    # cv2.polylines(imgA_warp,[warp_kpm],True,(0,0,255),thickness=5)
-    return imgA_warp
+

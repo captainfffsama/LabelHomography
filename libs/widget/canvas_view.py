@@ -3,11 +3,12 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 16:54:38
+@LastEditTime: 2023-01-12 15:51:18
 @FilePath: /label_homography/libs/widget/canvas_view.py
 @Description:
 '''
 from typing import Union
+import weakref
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem, QFrame
 from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QCursor
@@ -23,16 +24,54 @@ def printqtrect(rect):
 
 
 class CanvasSceneBase(QGraphicsScene):
-    haveItemSelectedSignal = pyqtSignal()
-    itemSelectedSignal = pyqtSignal(QGraphicsItem)
+    NoSelectedSignal = pyqtSignal()
+    ItemSelectedSignal = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, **kwargs):
         super(CanvasSceneBase, self).__init__(*args, **kwargs)
         self._isdrawing = False
+        self._itemMap = weakref.WeakValueDictionary()
+        self.selectionChanged.connect(self.selectionChangedSignalDealSlot)
 
-    def closeAllItemsSelected_slot(self):
-        for item in self.items():
-            item.setSelected(False)
+        self._lastSelectedItem = None
+
+    @property
+    def beSelectedItem(self):
+        return self._lastSelectedItem
+
+    def selectionChangedSignalDealSlot(self):
+        selectItems = self.selectedItems()
+        if len(selectItems) == 1:
+            self._lastSelectedItem = selectItems[0]
+            self.ItemSelectedSignal.emit(self._lastSelectedItem)
+        elif len(selectItems) == 0:
+            #nothing select
+            self._lastSelectedItem = None
+            self.NoSelectedSignal.emit()
+        else:
+            self._lastSelectedItem.setSelected(False)
+
+    def addItem(self, item):
+        if getattr(item, 'hash'):
+            self._itemMap[item.hash] = item
+        return super().addItem(item)
+
+    def removeItem(self, item):
+        if getattr(item, 'hash'):
+            self._itemMap.pop(item.hash, None)
+        super().removeItem(item)
+
+    def clear(self):
+        self._itemMap.clear()
+        return super().clear()
+
+    def findItemByHash(self, hash):
+        return self._itemMap.get(hash, None)
+
+    def removeItemByHash(self, hash):
+        item = self.findItemByHash(hash)
+        if item:
+            self.removeItem(item)
 
 
 class TemplateCanvasScene(CanvasSceneBase):
@@ -41,12 +80,28 @@ class TemplateCanvasScene(CanvasSceneBase):
 
     def __init__(self, *args, **kwargs):
         super(TemplateCanvasScene, self).__init__(*args, **kwargs)
+        self._nextShapeLabel = None
+
+    def removeItem(self, item):
+        if hasattr(item, "_label"):
+            self._nextShapeLabel = item._label
+        return super().removeItem(item)
+
+    def addItem(self, item):
+        if hasattr(item, "_label"):
+            self._nextShapeLabel = None
+        return super().addItem(item)
+
+    @property
+    def nextShapeLabel(self):
+        return len(self.items
+                   ) if self._nextShapeLabel is None else self._nextShapeLabel
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
         if self.sceneRect().contains(event.scenePos()):
             if event.button() == Qt.LeftButton:
                 if self._isdrawing:
-                    item = PointShape(len(self.items()))
+                    item = PointShape(self.nextShapeLabel)
                     self.addItem(item)
                     item.setPos(event.scenePos())
                     self._isdrawing = False
@@ -98,13 +153,12 @@ class SampleCanvasScene(CanvasSceneBase):
 class CanvasView(QGraphicsView):
     stopDrawingSignal = pyqtSignal()
 
-    def __init__(self, id, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.backgroundPixmap = QPixmap()
         self.setFocusPolicy(Qt.WheelFocus)
         self.setMouseTracking(True)
-        self.id = id
         self.setFrameShape(QFrame.NoFrame)
 
     @property
@@ -186,7 +240,7 @@ class CanvasView(QGraphicsView):
                 c = int((self.horizontalScrollBar().maximum() -
                          self.horizontalScrollBar().minimum()) * 0.1)
                 v = self.horizontalScrollBar().value(
-                ) - c if  h_delta > 0 else self.horizontalScrollBar().value(
+                ) - c if h_delta > 0 else self.horizontalScrollBar().value(
                 ) + c
                 v = max(self.horizontalScrollBar().minimum(), v)
                 v = min(self.horizontalScrollBar().maximum(), v)

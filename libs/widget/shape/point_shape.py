@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-05 12:56:36
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 14:46:03
+@LastEditTime: 2023-01-12 13:54:24
 @FilePath: /label_homography/libs/widget/shape/point_shape.py
 @Description:
 '''
@@ -58,17 +58,10 @@ class PointShape(QGraphicsItem):
     def mouseMoveEvent(self, event: 'QGraphicsSceneMouseEvent'):
         return super().mouseMoveEvent(event)
 
-    def itemChange(self, change: 'QGraphicsItem.GraphicsItemChange',
-                   value: Any) -> Any:
-        if change == QGraphicsItem.ItemSelectedHasChanged:
-            if self.isSelected():
-                self.scene().haveItemSelectedSignal.emit()
-                self.scene().itemSelectedSignal.emit(self)
-        return super().itemChange(change, value)
-
     def mouseReleaseEvent(self, event):
         if self.isSelected():
             if not self.scene().sceneRect().contains(self.scenePos()):
                 self.scene().delItemSignal.emit(self)
 
         return super().mouseReleaseEvent(event)
+
