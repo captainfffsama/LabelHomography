@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 16:01:14
+@LastEditTime: 2023-01-12 16:47:00
 @FilePath: /label_homography/app.py
 @Description:
 '''
@@ -20,11 +20,12 @@ from PyQt5.QtCore import Qt, QPoint, QSize, QCoreApplication
 from PyQt5.QtGui import QImage, QPixmap, QCursor, QColor
 
 from libs.ui.ui_MainWindow import Ui_MainWindow
-from libs.utils import get_sample_file, toQImage, countH
+from libs.utils import get_sample_file, toQImage, countH,printFuncName
 from libs.widget.canvas_view import CanvasView, TemplateCanvasScene, SampleCanvasScene
 from libs.widget.check_dock_widget_view import CheckDockWidgetCanvasView
 from libs.widget.label_list_item import LabelListItem, LabelItemWidget
 from libs.widget.label_list_widget import LabelListWidget
+from libs.config.default_cfg import param as cfg
 import apprcc_rc
 
 SEPARATE_FLAG = " : "
@@ -89,7 +90,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.tem_draw_area.stopDrawingSignal.connect(self.stopAddItemSlot)
         self.sample_draw_area.stopDrawingSignal.connect(self.stopAddItemSlot)
 
-        self.data_dir = None
+        self.data_dir = cfg['default_dir']
+        self.previouse_data_dir=self.data_dir
         self.current_t_path = None
         self.current_t_qimage = None
         self.current_s_path = None
@@ -129,6 +131,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         else:
             pass
 
+    # @printFuncName
     def showSelectShape(self, shape_id, shape_type):
         self.stopAddItemSlot()
         if shape_type == "Template":
@@ -248,33 +251,36 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     def show_file_dialog_slot(self):
         self.dataListWidget.clear()
-        dir_path = QFileDialog.getExistingDirectory(self, "Open Dir", "./")
+        dir_path = QFileDialog.getExistingDirectory(self, "Open Dir", self.previouse_data_dir)
         if dir_path:
-            self.data_dir = dir_path
-            default_item = None
-            samples_tree = get_sample_file(dir_path,
-                                           filter=('.jpg', '.JPG', '.png',
-                                                   '.PNG', '.bmp', '.BMP',
-                                                   '.csv', '.CSV'))
-            self.dataListWidget.clear()
-            for k, v in samples_tree.items():
-                root = QTreeWidgetItem(self.dataListWidget)
-                root.setText(
-                    0,
-                    os.path.basename(k) + SEPARATE_FLAG +
-                    os.path.basename(samples_tree[k]['t']))
-                root.setFlags(root.flags() & ~Qt.ItemIsSelectable)
-                for i in samples_tree[k]['s']:
-                    child = QTreeWidgetItem(root)
-                    child.setText(0, os.path.basename(i))
-                    if default_item is None:
-                        default_item = child
+            self.data_dir=dir_path
+            self.previouse_data_dir=dir_path
+        else:
+            self.data_dir = self.previouse_data_dir
+        default_item = None
+        samples_tree = get_sample_file(self.data_dir,
+                                        filter=('.jpg', '.JPG', '.png',
+                                                '.PNG', '.bmp', '.BMP',
+                                                '.csv', '.CSV'))
+        self.dataListWidget.clear()
+        for k, v in samples_tree.items():
+            root = QTreeWidgetItem(self.dataListWidget)
+            root.setText(
+                0,
+                os.path.basename(k) + SEPARATE_FLAG +
+                os.path.basename(samples_tree[k]['t']))
+            root.setFlags(root.flags() & ~Qt.ItemIsSelectable)
+            for i in samples_tree[k]['s']:
+                child = QTreeWidgetItem(root)
+                child.setText(0, os.path.basename(i))
+                if default_item is None:
+                    default_item = child
 
-                self.dataListWidget.addTopLevelItem(root)
-                if default_item is not None:
-                    self.dataListWidget.setCurrentItem(default_item)
-            self.dataListWidget.expandAll()
-            print("get all file done!")
+            self.dataListWidget.addTopLevelItem(root)
+            if default_item is not None:
+                self.dataListWidget.setCurrentItem(default_item)
+        self.dataListWidget.expandAll()
+        print("get all file done!")
 
     def previousSampleSelectSlot(self):
         if self.actionAuto_Save.isChecked():

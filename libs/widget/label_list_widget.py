@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-09 17:01:01
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 16:01:36
+@LastEditTime: 2023-01-12 16:22:09
 @FilePath: /label_homography/libs/widget/label_list_widget.py
 @Description:
 '''
@@ -56,18 +56,11 @@ class LabelListWidget(QListWidget):
                 self.needDelItem.emit(self.currentItem().hash)
         return super().keyReleaseEvent(event)
 
-    def selectionChanged(self, selected, deselected):
-        print("label list selected item:", self.selectedItems()[0].hash)
-        print("current item:", self.currentItem().hash)
-        super().selectionChanged(selected, deselected)
-
     # @printFuncName
     def currentItemChanged_slot(self, current, previous):
         if previous:
             self.removeItemWidget(previous)
-            print("p:", previous._label)
         if current is not None:
-            print("c:", current._label)
             self.setCurrentItem(current)
             itemWidget = LabelItemWidget()
             self.setItemWidget(current, itemWidget)

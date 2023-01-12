@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-06 13:27:04
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-11 14:40:14
+@LastEditTime: 2023-01-12 16:10:55
 @FilePath: /label_homography/libs/config/color_list.py
 @Description:
 '''
@@ -448,5 +448,8 @@ COLOR_LIST = (
     (238, 224, 229),
 )
 
-def get_color(num):
-    return QColor(*COLOR_LIST[num%len(COLOR_LIST)])
+def get_color(num,reverse=False):
+    rgb=COLOR_LIST[num%len(COLOR_LIST)]
+    if reverse:
+        rgb= [255 -x for x in rgb]
+    return QColor(*rgb)

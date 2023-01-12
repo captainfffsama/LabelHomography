@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 15:59:22
+@LastEditTime: 2023-01-12 16:30:46
 @FilePath: /label_homography/libs/widget/canvas_view.py
 @Description:
 '''
