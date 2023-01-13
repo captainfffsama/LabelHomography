@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-14 17:41:47
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 16:47:00
+@LastEditTime: 2023-01-13 13:55:57
 @FilePath: /label_homography/app.py
 @Description:
 '''
@@ -148,16 +148,20 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             view.centerOn(item.scenePos())
 
     def actionAddShape_triggered_slot(self):
-        self.tem_draw_area.prepareAddShape(QPoint(0, 0))
+        qc_scenepos=self.tem_draw_area.cursorPos2Scene(QCursor.pos())
+        if self.tem_draw_area.sceneRect().contains(qc_scenepos):
+            self.tem_draw_area.prepareAddShape(qc_scenepos)
+        else:
+            self.tem_draw_area.prepareAddShape(QPoint(0, 0))
 
     def shapePairdrawDone_slot(self, shape: QGraphicsItem):
-        self.actionAddShape_triggered_slot()
 
         listItem = LabelListItem(text=str(shape._label),
                                  hash=shape.hash,
                                  parent=self.labelListWidget)
         self.labelListWidget.addItem(listItem)
         self.shapes_hash_set.add(shape.hash)
+        self.tem_draw_area.prepareAddShape(shape.scenePos())
 
     def delItemSlot(self, item_hash):
         if isinstance(item_hash, QGraphicsItem):
@@ -181,7 +185,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 tps = self.tem_draw_area.scene().findItemByHash(
                     itemHash).scenePos() - t_scene_rect.topLeft()
                 sps = self.sample_draw_area.scene().findItemByHash(
-                    itemHash).scenePos() - t_scene_rect.topLeft()
+                    itemHash).scenePos() - s_scene_rect.topLeft()
                 template_ps.append((tps.x(), tps.y()))
                 sample_ps.append((sps.x(), sps.y()))
 
@@ -199,7 +203,18 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
             final_result["Template"] = template_info
             final_result["Sample"] = sample_info
-            if not sample_ps:
+            if len(sample_ps)<4:
+                title = self._tr(self.__class__.__name__, "Error")
+                text = self._tr(
+                    self.__class__.__name__,
+                    "Points pair too less! Computer homography matrix need 4 pair Point at least!"
+                )
+                QMessageBox.critical(self, title, text, QMessageBox.Yes,
+                                     QMessageBox.Yes)
+
+                self.statusbar.showMessage(
+                    "{} points too less!".format(
+                        os.path.basename(self.current_s_path)), 5000)
                 return
 
             #count H

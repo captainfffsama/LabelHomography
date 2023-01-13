@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-04 15:12:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 16:30:46
+@LastEditTime: 2023-01-13 14:22:30
 @FilePath: /label_homography/libs/widget/canvas_view.py
 @Description:
 '''
@@ -14,6 +14,7 @@ from PyQt5.QtCore import pyqtSignal, QPointF, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QCursor
 
 from libs.utils import QPointF2QPoint
+import numpy as np
 
 from .shape import PointShape
 
@@ -94,7 +95,7 @@ class TemplateCanvasScene(CanvasSceneBase):
 
     @property
     def nextShapeLabel(self):
-        return len(self.items
+        return len(self.items()
                    ) if self._nextShapeLabel is None else self._nextShapeLabel
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
@@ -221,12 +222,16 @@ class CanvasView(QGraphicsView):
             self.centerOn(
                 self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
             if v_delta:
-                s_v = 1 + v_delta / abs(v_delta) * 0.1
+                s_v = 1 + v_delta / abs(v_delta) * 0.2
             else:
                 s_v = 1
-            if 0.01 < self.transform().m11() < 20:
-                self.scale(s_v, s_v)
 
+            if 0.01<self.transform().m11() < 20:
+                self.scale(s_v, s_v)
+            elif s_v>1 and self.transform().m11()<0.01:
+                self.scale(s_v, s_v)
+            elif s_v<1 and self.transform().m11()>20:
+                self.scale(s_v, s_v)
         else:
             if v_delta:
                 c = int((self.verticalScrollBar().maximum() -

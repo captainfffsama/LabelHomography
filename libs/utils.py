@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2022-12-19 10:53:56
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 16:00:34
+@LastEditTime: 2023-01-13 13:51:00
 @FilePath: /label_homography/libs/utils.py
 @Description:
 '''
@@ -76,7 +76,12 @@ def toQImage(file_path):
 def countH(ps1, ps2):
     ps1 = np.array(ps1)
     ps2 = np.array(ps2)
-    H, Mask = cv2.findHomography(ps1, ps2, cv2.RANSAC, 3, maxIters=100)
+    try:
+        H, Mask = cv2.findHomography(ps1, ps2, cv2.USAC_MAGSAC, 3, maxIters=1000)
+    except Exception as e:
+        print(e)
+        H=None,
+        Mask=None
 
     return H, Mask
 
