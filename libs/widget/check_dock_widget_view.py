@@ -3,7 +3,7 @@
 @Author: captainfffsama
 @Date: 2023-01-11 12:41:44
 @LastEditors: captainfffsama tuanzhangsama@outlook.com
-@LastEditTime: 2023-01-12 16:01:23
+@LastEditTime: 2023-01-13 14:45:43
 @FilePath: /label_homography/libs/widget/check_dock_widget_view.py
 @Description:
 '''
@@ -37,7 +37,6 @@ class CheckDockWidgetCanvasView(QGraphicsView):
                 -self.backgroundPixmap.height() / 2,
                 self.backgroundPixmap.width(), self.backgroundPixmap.height())
         self.scene().setSceneRect(*rect)
-        self.fitInView(*rect, Qt.KeepAspectRatio)
 
         self.scene().update(self.sceneRect())
 
@@ -57,8 +56,6 @@ class CheckDockWidgetCanvasView(QGraphicsView):
 
         mods = ev.modifiers()
         if Qt.ControlModifier == int(mods):
-            self.centerOn(
-                self.cursorPos2Scene(QPointF2QPoint(ev.globalPosition())))
             if v_delta:
                 s_v = 1 + v_delta / abs(v_delta) * 0.1
             else:
@@ -103,3 +100,4 @@ class CheckDockWidgetCanvasView(QGraphicsView):
 
         self.scene().addItem(sample_qgitem)
         self.scene().addItem(template_qgitem)
+        self.fitInView(self.sceneRect(), Qt.KeepAspectRatio)
